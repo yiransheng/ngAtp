@@ -1,0 +1,19 @@
+div[ng-atp]{
+  max-width: 200px;
+  position:relative;
+}
+
+input[ng-atp-input] {
+  background: transparent;
+  display: block;
+  width: 100%;
+  position:absolute;
+  top:0; left:0;
+}
+div[ng-atp] input[disabled] {
+  position:absolute;
+  background:#fff;
+  width:100%;
+  z-index:-1;
+  top: 0; left: 0;
+}
