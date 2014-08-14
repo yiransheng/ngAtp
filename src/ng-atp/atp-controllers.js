@@ -24,7 +24,7 @@
 			if(!$scope.ATP.isComplete()) $scope.ATP.search();
 		});
 		$scope.$watch('ATP.suggestions', function(suggestions) {
-			$scope.ATP.showSuggestions = !$scope.ATP.tryCompleteExact();
+			$scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;
 		});
 		parent.$watch(function() {
 			return _getter(parent);

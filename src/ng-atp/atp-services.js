@@ -81,10 +81,11 @@
 				} 
 				this.value = null;
 				this.exportValue(null);
-				this.showSuggestions = true;
 				this.engine.get(str, function(results) {
 					if(ATP$isEmpty(this.query)) {
 						this.showSuggestions = false;
+					} else {
+					  this.showSuggestions = true;
 					}
 					if(!this.isComplete()) {
 					  var suggestions = results.concat(this.suggestions); 

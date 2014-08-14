@@ -1,0 +1,92 @@
+* {
+  box-sizing: border-box;
+}
+body{
+  font-size: 18px;  
+  background: #f6f6f6;
+}
+ #main {
+  width: 75%;
+  max-width: 36em;
+  margin: 0 auto;
+  height: 100%;
+ }
+.white-frame {
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-size: auto;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 17px 0px;
+  font-smoothing: antialiased;
+  background-attachment: scroll;
+  background-clip: border-box;
+  background-color: rgb(255, 255, 255);
+  background-image: none;
+  background-origin: padding-box;
+  background-size: auto;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 17px 0px;
+  box-sizing: border-box;
+  color: rgb(68, 68, 68);
+  display: block;
+  font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+  height: 69px;
+  margin-bottom: 25px;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-top: 25px;
+  padding: 1em;
+  z-index: auto;
+  overflow: visible;
+}
+[ng-atp]{
+  background: none;
+}
+input {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.5em;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid #000;
+  outline: none;
+  width: 100%;  
+  font-size: 1em;
+}
+input:focus {
+  border-bottom: 3px solid rgb(62, 80, 180); 
+}
+[ng-atp-suggestions] {
+  background: white;
+  margin: 0;
+  margin-top: 5px;
+  padding: .5em;
+  border: 1px solid  rgb(62, 80, 180);
+  border-top: 2px solid  rgb(62, 80, 180);
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 8px 17px 0px;
+}
+[ng-atp-suggestions] li {
+  list-style-type: none;
+  border-bottom: 1px solid #efefef;
+  padding: 4px 0;
+  margin-top: -1px;
+  cursor: pointer;
+}
+[ng-atp-suggestions] li.selected {
+  background: lightyellow;
+}
+[ng-atp-suggestions] li:hover{
+  border-bottom: 1px solid #eaeaef;
+}
+[ng-atp-suggestions] li:last-child {
+  border: none;
+}
+
+p {
+  display:block;
+  height: 2em;
+  padding: .3em;
+  border: 1px solid #eaeaef;
+}
+p.success {
+  border: 1px solid rgb(145,199,133);
+}

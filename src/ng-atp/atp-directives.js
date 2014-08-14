@@ -36,8 +36,8 @@
 					}
 					var hint = bulidHint(inputElement);
 					hint.attr('ng-show', 'ATP.showSuggestions');
-					$compile(hint)(scope);
 					inputElement.parent()[0].insertBefore(hint[0], inputElement[0]);
+					$compile(hint)(scope);
 					inputElement.bind('keydown', function(event) {
 						hint.val('');
 						if(event.keyCode==40) {  // down
@@ -125,11 +125,8 @@
 			}
 
 		}])
-	.directive('ngAtpSuggestions', ['$parse', function($parse) { 
-			return {
-				require  : '^ngAtp',
-				restrict : 'AE',
-				template : ['<li ng-show="ATP.showSuggestions"', 
+	.directive('ngAtpSuggestions', ['$parse', '$compile', function($parse, $compile) { 
+			var template = ['<li ', 
 										'ng-repeat="suggestion in ATP.suggestions track by (ATP._idAttrib ? suggestion[ATP._idAttrib] : $id(suggestion))"',
 										'ng-click="ATP.tryComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
 										'ng-class="{ selected : $index == ATP.selected }" ',
@@ -138,13 +135,25 @@
 										'  <span ng-switch-when="false">{{ ATP.format(suggestion) }}</span>',
 										'  <ng-switch-default><ng-include src="$templateUrl"></ng-include></ng-switch-default>',
 										'</ng-switch>',
-										'</li>'].join(''),
+										'</li>'].join('');
+			return {
+				require  : '^ngAtp',
+				restrict : 'AE',
 				scope : false,
-				link  : {
-					pre: function(scope, element, attrs){ 
-							scope.$templateUrl = attrs.templateUrl ? $parse(attrs.templateUrl)(scope) : false; 
-					},
-					post: angular.noop
+				compile  : function(element, attrs) {
+					var require_recompile = !attrs.ngShow;
+					element.attr('ng-show', 'ATP.showSuggestions');
+					return {
+						pre: function(scope, element, attrs){ 
+							  if(require_recompile) {
+									element[0].innerHTML = template;
+								  $compile(element)(scope);
+									return;
+								}
+								scope.$templateUrl = attrs.templateUrl ? $parse(attrs.templateUrl)(scope) : false; 
+						},
+						post: angular.noop
+					}
 				}
 			} 
 		}]);

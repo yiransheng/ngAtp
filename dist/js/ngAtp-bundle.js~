@@ -713,7 +713,7 @@
 			if(!$scope.ATP.isComplete()) $scope.ATP.search();
 		});
 		$scope.$watch('ATP.suggestions', function(suggestions) {
-			$scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;
+			$scope.ATP.showSuggestions = !$scope.ATP.tryCompleteExact();
 		});
 		parent.$watch(function() {
 			return _getter(parent);
@@ -769,8 +769,8 @@
 					}
 					var hint = bulidHint(inputElement);
 					hint.attr('ng-show', 'ATP.showSuggestions');
-					inputElement.parent()[0].insertBefore(hint[0], inputElement[0]);
 					$compile(hint)(scope);
+					inputElement.parent()[0].insertBefore(hint[0], inputElement[0]);
 					inputElement.bind('keydown', function(event) {
 						hint.val('');
 						if(event.keyCode==40) {  // down
@@ -858,8 +858,11 @@
 			}
 
 		}])
-	.directive('ngAtpSuggestions', ['$parse', '$compile', function($parse, $compile) { 
-			var template = ['<li ', 
+	.directive('ngAtpSuggestions', ['$parse', function($parse) { 
+			return {
+				require  : '^ngAtp',
+				restrict : 'AE',
+				template : ['<li ng-show="ATP.showSuggestions"', 
 										'ng-repeat="suggestion in ATP.suggestions track by (ATP._idAttrib ? suggestion[ATP._idAttrib] : $id(suggestion))"',
 										'ng-click="ATP.tryComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
 										'ng-class="{ selected : $index == ATP.selected }" ',
@@ -868,25 +871,13 @@
 										'  <span ng-switch-when="false">{{ ATP.format(suggestion) }}</span>',
 										'  <ng-switch-default><ng-include src="$templateUrl"></ng-include></ng-switch-default>',
 										'</ng-switch>',
-										'</li>'].join('');
-			return {
-				require  : '^ngAtp',
-				restrict : 'AE',
+										'</li>'].join(''),
 				scope : false,
-				compile  : function(element, attrs) {
-					var require_recompile = !attrs.ngShow;
-					element.attr('ng-show', 'ATP.showSuggestions');
-					return {
-						pre: function(scope, element, attrs){ 
-							  if(require_recompile) {
-									element[0].innerHTML = template;
-								  $compile(element)(scope);
-									return;
-								}
-								scope.$templateUrl = attrs.templateUrl ? $parse(attrs.templateUrl)(scope) : false; 
-						},
-						post: angular.noop
-					}
+				link  : {
+					pre: function(scope, element, attrs){ 
+							scope.$templateUrl = attrs.templateUrl ? $parse(attrs.templateUrl)(scope) : false; 
+					},
+					post: angular.noop
 				}
 			} 
 		}]);
@@ -979,11 +970,10 @@
 				} 
 				this.value = null;
 				this.exportValue(null);
+				this.showSuggestions = true;
 				this.engine.get(str, function(results) {
 					if(ATP$isEmpty(this.query)) {
 						this.showSuggestions = false;
-					} else {
-					  this.showSuggestions = true;
 					}
 					if(!this.isComplete()) {
 					  var suggestions = results.concat(this.suggestions); 

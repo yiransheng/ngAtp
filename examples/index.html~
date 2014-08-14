@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ngAtp: Angular Autocompleter</title>
+  <script src="../bower_components/lodash/dist/lodash.min.js"></script>
+  <script src="../bower_components/angular/angular.min.js"></script>	
+  <script src="../dist/js/ngAtp-bundle.js"></script>
+  <link href="../dist/css/ng-atp.css" rel="stylesheet">
+  <link href="example.css" rel="stylesheet">
+</head>
+<body ng-app="myApp">  
+<div ng-controller="MyCtrl" id="main">  
+  <h3>Angular Autocompleter: ngAtp </h3>
+  <p ng-class="{ success : city }"> {{ city }} </p>
+  <div ng-atp="city"ng-atp-config="cityAutocompleteOpts">
+    <input ng-atp-input />
+    <ul ng-atp-suggestions>
+    </ul>
+  </div>
+</div>
+<script>
+
+var myApp = angular.module('myApp',['ngAtp']);
+function MyCtrl($scope) {
+  $scope.city={ value: "Sigil", id: "1" };
+  $scope.city2={ value: "Amn", id: "2" };
+  $scope.cityAutocompleteOpts = {
+    prefetch : 'data.json',
+//    remote : 'http://0.0.0.0:8001/api?q=%QUERY',
+    verify : function(datum) {
+      return datum && _.has(datum, 'value')
+    },
+    limit: 25
+  };
+}
+</script>
+</body>
+</html>
