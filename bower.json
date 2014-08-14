@@ -1,26 +1,27 @@
 {
   "name": "ngAtp",
   "version": "0.0.1",
+  "homepage": "https://github.com/yiransheng/ngAtp",
   "authors": [
     "Yiran Sheng <shengyiran@gmail.com>"
   ],
   "description": "Angular Autocompleter based on Twitter Bloodhound",
   "main": "dist/js/ngAtp-bundle.js",
-  "moduleType": [
-    "globals",
-  ],
   "keywords": [
     "Angular",
     "Bloodhound",
     "Autocomplete"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/yiransheng/ngAtp",
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "angular": "~1.2.22"
+  }
 }
