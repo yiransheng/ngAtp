@@ -140,6 +140,7 @@
 			},
 			exportValue : angular.noop,
 			tryComplete : function(i) {
+				if(this.isComplete()) return true;
 				var suggested = _.isUndefined(i) ? this.getSuggested() : this.suggestions[i];  	
 				var out;
 				if(this.verify(suggested)) {
