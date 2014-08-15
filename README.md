@@ -15,6 +15,13 @@ Set `ng-atp` attribute value to the variable in scope you'd like to autocomplete
 In addition, `ng-atp-suggestions` allows you to use custom template by suppling an attribute `templateUrl`. `templateUrl` should point to a valid `Angular` template for a single suggestion item (which will be wrapped inside a `<li>` tag), and `ng-atp-suggestions` expose the scope variable `suggestion` for your template, as well as setting the class of the corresponding item to "selected" from user interactions (hover, and arrow key press). An example template may look like this:
 
 ```
+<ul ng-atp-suggestions templateUrl="partials/mytemplate.html">
+```
+
+
+```
+mytemplate.html:
+
 <div>
   <i class="fa {{ suggestion.icon }}"></i>
   <span>{{ suggestion.label }}</span>
