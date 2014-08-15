@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ngAtp: Angular Autocompleter</title>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.js"></script>	
+  <script src="./dist/js/ngAtp-bundle.js"></script>
+  <link href="./dist/css/ng-atp.css" rel="stylesheet">
+  <link href="example.css" rel="stylesheet">
+</head>
+<body ng-app="myApp">  
+<div ng-controller="MyCtrl" id="main" class="white-frame">  
+  <h3>Angular Autocompleter: ngAtp </h3>
+  <p ng-class="{ success : city }"> {{ city }} <span class="close" ng-click="clearCity()">×</span></p>
+  <div ng-atp="city"ng-atp-config="cityAutocompleteOpts">
+    <input ng-atp-input />
+    <ul ng-atp-suggestions>
+    </ul>
+  </div>
+</div>
+<script>
+
+var myApp = angular.module('myApp',['ngAtp']);
+function MyCtrl($scope) {
+  $scope.clearCity = function() {
+    $scope.city = null;
+  }
+  $scope.city={ value: "Sigil", id: "1" };
+  $scope.city2={ value: "Amn", id: "2" };
+  $scope.cityAutocompleteOpts = {
+    prefetch : 'data.json',
+//    remote : 'http://0.0.0.0:8001/api?q=%QUERY',
+    verify : function(datum) {
+      return datum && _.has(datum, 'value')
+    },
+    limit: 25,
+    clearWhenComplete : true
+  };
+}
+</script>
+</body>
+</html>
