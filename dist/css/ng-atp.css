@@ -1,0 +1,26 @@
+[ng-atp]{
+  position:relative;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+input[ng-atp-input] {
+  background: transparent;
+  display: block;
+  width: 100%;
+}
+div[ng-atp] input[disabled].tt-hint {
+  position:absolute;
+  background: transparent;
+  width:100%;
+  z-index: 0;
+  top: 0;
+  border: none;
+  outline:none;
+}
+[ng-atp-suggestions] {
+  width: 100%;
+  position:absolute;
+  top: 100%;
+}
