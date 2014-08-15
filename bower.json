@@ -1,5 +1,5 @@
 {
-  "name": "ngAtp",
+  "name": "ng-atp",
   "version": "0.0.1",
   "homepage": "https://github.com/yiransheng/ngAtp",
   "authors": [
@@ -23,5 +23,9 @@
   "dependencies": {
     "lodash": "~2.4.1",
     "angular": "~1.2.22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yiransheng/ngApt.git"
   }
 }
