@@ -25,7 +25,7 @@ mytemplate.html:
 <div>
   <i class="fa {{ suggestion.icon }}"></i>
   <span>{{ suggestion.label }}</span>
-	<img src="{{ suggestion.url }}">
+  <img src="{{ suggestion.url }}">
 </div>
 ```
 
