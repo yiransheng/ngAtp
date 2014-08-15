@@ -12,7 +12,7 @@
 <body ng-app="myApp">  
 <div ng-controller="MyCtrl" id="main" class="white-frame">  
   <h3>Angular Autocompleter: ngAtp </h3>
-  <p ng-class="{ success : city }"> {{ city }} </p>
+  <p ng-class="{ success : city }"> {{ city }} <span class="close" ng-click="clearCity()">×</span></p>
   <div ng-atp="city"ng-atp-config="cityAutocompleteOpts">
     <input ng-atp-input />
     <ul ng-atp-suggestions>
@@ -23,6 +23,9 @@
 
 var myApp = angular.module('myApp',['ngAtp']);
 function MyCtrl($scope) {
+  $scope.clearCity = function() {
+    $scope.city = null;
+  }
   $scope.city={ value: "Sigil", id: "1" };
   $scope.city2={ value: "Amn", id: "2" };
   $scope.cityAutocompleteOpts = {
@@ -31,7 +34,8 @@ function MyCtrl($scope) {
     verify : function(datum) {
       return datum && _.has(datum, 'value')
     },
-    limit: 25
+    limit: 25,
+    clearWhenComplete : true
   };
 }
 </script>

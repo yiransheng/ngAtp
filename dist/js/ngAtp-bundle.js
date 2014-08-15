@@ -914,7 +914,7 @@
 			initialized : false,
 			$new : function(options) {
 				var atp = Object.create(this);
-				atp.clearWhenComplete = options.clearWhenComplete || false;
+				// atp.clearWhenComplete = options.clearWhenComplete || false;
 				atp.selected = -1;	
 				atp.query = "";
 				atp.suggestions = [];
@@ -932,7 +932,7 @@
 					sorter   : options.sorter
 				});
 				atp.engine.initialize();
-				if(atp.verify(options.initialvalue)) {
+				if(atp.clearWhenComplete && atp.verify(options.initialvalue)) {
 					var _cloned_value = _.clone(options.initialvalue);
 					atp.value = options.initialvalue;
 					atp.engine.add([ _cloned_value ]);
@@ -951,9 +951,11 @@
 				return  d ? d.value : '';
 			},
 			clear : function() {
-				this.clearWhenComplete && (this.query = "");
+				// this.clearWhenComplete && (this.query = "");
+				// this.clearWhenComplete && (this.value = null);
 				this.selected = -1;
 				this.suggestions.length = 0;	
+				this.showSuggestions = false;
 			},
 			getByIndex : function(i) {
 				if(i<0 || i>=this.suggestions.length) return null;
@@ -1039,13 +1041,11 @@
 				var suggested = _.isUndefined(i) ? this.getSuggested() : this.suggestions[i];  	
 				var out;
 				if(this.verify(suggested)) {
-					this.clear();
 					this.value = suggested;
 					this.query = this.format(suggested);
 					out = _.clone(this.value);
-					delete out.$$hashKey;
 					this.exportValue(out);
-					this.showSuggestions = false;
+					this.clear();
 					return true;
 				} else {
 					this.exportValue(null);

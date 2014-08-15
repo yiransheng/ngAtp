@@ -9,6 +9,7 @@ body{
   width: 75%;
   max-width: 36em;
   margin: 0 auto;
+  height: 100%;
  }
 .white-frame {
   background-clip: border-box;
@@ -88,4 +89,22 @@ p {
 }
 p.success {
   border: 1px solid rgb(145,199,133);
+}
+span.close {
+  float: right;
+  display: inline-block;
+  cursor: pointer;
+  background: #f3f3f3;
+  border-radius: 20px;
+  width: 1.2em;
+  height: 1.2em;
+  padding: 0;
+  padding-top: .53em;
+  padding-left: .08em;
+  text-align: center;
+  line-height: 0;
+  border: 1px solid transparent;
+}
+span.close:hover{
+  border: 1px solid rgb(62, 80, 180);
 }
