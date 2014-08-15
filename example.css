@@ -12,7 +12,8 @@ body{
   height: 100%;
  }
  #readme {
-   width: 75%;
+   width: 50%;
+   min-width: 700px;
    height: 100%;
    margin: 4em auto;
  } 
