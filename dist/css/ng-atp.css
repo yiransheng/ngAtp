@@ -14,7 +14,7 @@ div[ng-atp] input[disabled].tt-hint {
   position:absolute;
   background: transparent;
   width:100%;
-  z-index:-1;
+  z-index: 0;
   top: 0;
   border: none;
   outline:none;
