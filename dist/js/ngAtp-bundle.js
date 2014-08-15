@@ -762,7 +762,6 @@
 				var require_recompile = !attrs.ngModel;
 				require_recompile && tElement.attr('ng-model','ATP.query');
 				return function(scope, inputElement, attrs) {
-					window.scope = scope;
 					if(require_recompile) {
 						$compile(inputElement)(scope);
 						return;
@@ -1054,7 +1053,7 @@
 			},
 			tryCompleteExact : function() {
 				var suggested = _.findIndex(this.suggestions, function(s) {
-					return this.format(s) === this.query;
+					return this.format(s).toLowerCase() === this.query.toLowerCase();
 				}, this);
 				if(suggested>-1) {
 					return this.tryComplete(suggested);
