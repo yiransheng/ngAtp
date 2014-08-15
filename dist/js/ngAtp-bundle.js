@@ -762,7 +762,6 @@
 				var require_recompile = !attrs.ngModel;
 				require_recompile && tElement.attr('ng-model','ATP.query');
 				return function(scope, inputElement, attrs) {
-					window.scope = scope;
 					if(require_recompile) {
 						$compile(inputElement)(scope);
 						return;
