@@ -2,6 +2,7 @@
 
 ## Quick Start
 
+Include `dist/js/ngAtp-bundle.js` or `dist/js/ngAtp-bundle.min.js` on your page (or use as a bower component).
 
 ```
 <div ng-atp="city" ng-atp-config="cityAutocompleteOpts">
