@@ -703,14 +703,21 @@
 		var options = _getter_config(parent);
 				options = Object.create(options);
 				options.initialvalue = init_val;
-		$scope.ATP = ATPStates.$new(options); 	
+		$scope.ATP = ATPStates.$new(options);
 		$scope.ATP.exportValue = function(value) {
 			if(_.isEqual( value, _getter(parent) )) return false;
 			_setter(parent, value);
 			return true;
 		};
 		$scope.$watch('ATP.query', function(q) {
-			if(!$scope.ATP.isComplete()) $scope.ATP.search();
+			if(helpers.isEmpty(q)) {
+			  $scope.ATP.clear()
+				$scope.ATP.exportValue(null);
+				return;
+			}
+			if(!$scope.ATP.isComplete()) {
+				$scope.ATP.search();
+			} 
 		});
 		$scope.$watch('ATP.suggestions', function(suggestions) {
 			$scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;
@@ -783,7 +790,10 @@
 								scope.ATP.select(scope.ATP.selected - 1);
 							});
 						} else if (event.keyCode == 13) { // enter
-							scope.ATP.tryComplete();
+							event.preventDefault();
+							scope.$apply(function() {
+								scope.ATP.tryComplete();
+							});
 						} else if (event.keyCode == 9 || event.keyCode == 39) { // tab and right arrow
 							if (getCaretPosition(inputElement[0]) < inputElement.val().length) return;
 							event.preventDefault(); 
@@ -1037,6 +1047,7 @@
 			},
 			exportValue : angular.noop,
 			tryComplete : function(i) {
+				if(this.isComplete()) return true;
 				var suggested = _.isUndefined(i) ? this.getSuggested() : this.suggestions[i];  	
 				var out;
 				if(this.verify(suggested)) {
