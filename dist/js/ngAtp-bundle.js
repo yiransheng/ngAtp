@@ -1054,7 +1054,7 @@
 			},
 			tryCompleteExact : function() {
 				var suggested = _.findIndex(this.suggestions, function(s) {
-					return this.format(s) === this.query;
+					return this.format(s).toLowerCase() === this.query.toLowerCase();
 				}, this);
 				if(suggested>-1) {
 					return this.tryComplete(suggested);
