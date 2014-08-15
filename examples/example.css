@@ -14,7 +14,6 @@ body{
  #readme {
    width: 75%;
    height: 100%;
-   margin: 4em auto;
  } 
 .white-frame {
   background-clip: border-box;
@@ -87,13 +86,13 @@ input:focus {
   border: none;
 }
 
-#main p {
+p {
   display:block;
   height: 2em;
   padding: .3em;
   border: 1px solid #eaeaef;
 }
-#main p.success {
+p.success {
   border: 1px solid rgb(145,199,133);
 }
 span.close {

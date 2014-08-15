@@ -19,6 +19,35 @@
     </ul>
   </div>
 </div>
+<div id="readme" class="white-frame">
+<h1 id="ngatp-angular-autocompleter">ngAtp : Angular Autocompleter</h1>
+<h2 id="quick-start">Quick Start</h2>
+<p>Include <code>dist/js/ngAtp-bundle.js</code> or <code>dist/js/ngAtp-bundle.min.js</code> on your page (or use as a bower component).</p>
+<pre><code>&lt;div ng-atp=&quot;city&quot; ng-atp-config=&quot;cityAutocompleteOpts&quot;&gt;
+    &lt;input ng-atp-input /&gt;
+    &lt;ul ng-atp-suggestions&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>Set <code>ng-atp</code> attribute value to the variable in scope you'd like to autocomplete for, same way you'd use a <code>ngModel</code> directive. Pass <a href="https://github.com/twitter/typeahead.js/blob/master/doc/bloodhound.md"><code>Bloodhound</code></a> config object using <code>ng-atp-config</code> attribute. Additonal config options: <code>idAttribute</code>, specify the key/id attribute to use for tracking suggestion items (similar to <code>track by</code> for ng-repeat). Also, you should to supply two functions in config: <code>format</code> and <code>verify</code>(optional). <code>format</code> is expected to be a function that takes a suggestion datum (eg. <code>{ label: "Thing", id: 1}</code>) into a string to display, and <code>verify</code> is expected to be a function that takes a single suggestion datum as an argument, and returns a boolean (be sure to return false for null). </p>
+<p>In addition, <code>ng-atp-suggestions</code> allows you to use custom template by suppling an attribute <code>templateUrl</code>. <code>templateUrl</code> should point to a valid <code>Angular</code> template for a single suggestion item (which will be wrapped inside a <code>&lt;li&gt;</code> tag), and <code>ng-atp-suggestions</code> expose the scope variable <code>suggestion</code> for your template, as well as setting the class of the corresponding item to "selected" from user interactions (hover, and arrow key press). An example template may look like this:</p>
+<pre><code>&lt;ul ng-atp-suggestions templateUrl=&quot;partials/mytemplate.html&quot;&gt;
+</code></pre>
+
+<pre><code>mytemplate.html:
+
+&lt;div&gt;
+  &lt;i class=&quot;fa {{ suggestion.icon }}&quot;&gt;&lt;/i&gt;
+  &lt;span&gt;{{ suggestion.label }}&lt;/span&gt;
+  &lt;img src=&quot;{{ suggestion.url }}&quot;&gt;
+&lt;/div&gt;
+</code></pre>
+
+<h2 id="details">Details</h2>
+<p><code>ngAtp</code> implements Twitter <code>Bloodhound</code> as a <code>Angular</code> service, <code>ngBloodhound</code> uses <code>Angular</code>'s <code>$http</code> service as opposed to <code>jQuery</code> <code>$.ajax</code> in the original version. Other than that, suggestions are entirely managed by <code>Bloodhound</code> with all its prefetching, intelligent caching, fast lookups, and backfilling. On the rendering/directive side of things, <code>ngAtp</code> relies on <code>ng-model</code> and <code>ng-repeat</code> (without filtering, which is handled by <code>Bloodhound</code>), and tries to stick to default Angular directives as
+much as possilbe. </p>
+</div>
 <script>
 
 var myApp = angular.module('myApp',['ngAtp']);
