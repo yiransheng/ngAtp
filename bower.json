@@ -10,7 +10,8 @@
   "keywords": [
     "Angular",
     "Bloodhound",
-    "Autocomplete"
+    "Autocomplete",
+    "Typehead"
   ],
   "license": "MIT",
   "ignore": [
