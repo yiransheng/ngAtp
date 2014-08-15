@@ -50,6 +50,7 @@
 								scope.ATP.select(scope.ATP.selected - 1);
 							});
 						} else if (event.keyCode == 13) { // enter
+							event.preventDefault();
 							scope.ATP.tryComplete();
 						} else if (event.keyCode == 9 || event.keyCode == 39) { // tab and right arrow
 							if (getCaretPosition(inputElement[0]) < inputElement.val().length) return;

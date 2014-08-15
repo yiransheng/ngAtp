@@ -21,7 +21,12 @@
 			return true;
 		};
 		$scope.$watch('ATP.query', function(q) {
-			if(!$scope.ATP.isComplete()) $scope.ATP.search();
+			if(!$scope.ATP.isComplete()) {
+				$scope.ATP.search();
+			} else {
+				$scope.ATP.value = null;
+			  $scope.ATP.exporvValue(null);
+			}
 		});
 		$scope.$watch('ATP.suggestions', function(suggestions) {
 			$scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;

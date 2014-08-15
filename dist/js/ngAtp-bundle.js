@@ -710,7 +710,12 @@
 			return true;
 		};
 		$scope.$watch('ATP.query', function(q) {
-			if(!$scope.ATP.isComplete()) $scope.ATP.search();
+			if(!$scope.ATP.isComplete()) {
+				$scope.ATP.search();
+			} else {
+				$scope.ATP.value = null;
+			  $scope.ATP.exporvValue(null);
+			}
 		});
 		$scope.$watch('ATP.suggestions', function(suggestions) {
 			$scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;
@@ -783,6 +788,7 @@
 								scope.ATP.select(scope.ATP.selected - 1);
 							});
 						} else if (event.keyCode == 13) { // enter
+							event.preventDefault();
 							scope.ATP.tryComplete();
 						} else if (event.keyCode == 9 || event.keyCode == 39) { // tab and right arrow
 							if (getCaretPosition(inputElement[0]) < inputElement.val().length) return;
