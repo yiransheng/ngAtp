@@ -18,8 +18,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "test",
-    "tests"
+    "examples"
   ],
   "dependencies": {
     "lodash": "~2.4.1",
