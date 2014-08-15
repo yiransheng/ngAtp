@@ -1,5 +1,8 @@
 # ngAtp : Angular Autocompleter
 
+## Demo
+[http://yiransheng.github.io/ngAtp/](http://yiransheng.github.io/ngAtp/)
+
 ## Quick Start
 
 Include `dist/js/ngAtp-bundle.js` or `dist/js/ngAtp-bundle.min.js` on your page (or use as a bower component).
