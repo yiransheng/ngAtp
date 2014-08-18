@@ -10,7 +10,7 @@
 		var _setter = _getter.assign;
 		var _getter_config = $parse(config);
 		var parent = $scope.$parent;
-		var init_val = _getter(model);
+		var init_val = _getter(parent);
 		var options = _getter_config(parent);
 				options = Object.create(options);
 				options.initialvalue = init_val;
@@ -36,7 +36,8 @@
 		parent.$watch(function() {
 			return _getter(parent);
 		}, function(val) {
-			if(!_.isEqual(val, $scope.ATP.value)) {
+			var dupDetector = $scope.ATP.engine.dupDetector;
+			if(!dupDetector(val, $scope.ATP.value)) {
 				$scope.ATP.value = val;
 				$scope.ATP.query = $scope.ATP.format(val);
 				$scope.ATP.showSuggestions = false;

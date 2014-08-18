@@ -16,7 +16,6 @@
 			initialized : false,
 			$new : function(options) {
 				var atp = Object.create(this);
-				// atp.clearWhenComplete = options.clearWhenComplete || false;
 				atp.selected = -1;	
 				atp.query = "";
 				atp.suggestions = [];
@@ -30,11 +29,11 @@
 					remote   : options.remote,
 					local    : options.local,
 					limit    : options.limit,
-					dupDetector: options.dupDetector || _.isEqual,
+					dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return (a[atp._idAttrib] === b[atp._idAttrib]) } :  _.isEqual),
 					sorter   : options.sorter
 				});
 				atp.engine.initialize();
-				if(atp.clearWhenComplete && atp.verify(options.initialvalue)) {
+				if(atp.verify(options.initialvalue)) {
 					var _cloned_value = _.clone(options.initialvalue);
 					atp.value = options.initialvalue;
 					atp.engine.add([ _cloned_value ]);
@@ -53,8 +52,6 @@
 				return  d ? d.value : '';
 			},
 			clear : function() {
-				// this.clearWhenComplete && (this.query = "");
-				// this.clearWhenComplete && (this.value = null);
 				this.selected = -1;
 				this.suggestions.length = 0;	
 				this.showSuggestions = false;
