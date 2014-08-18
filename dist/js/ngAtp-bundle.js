@@ -941,7 +941,6 @@
 					sorter   : options.sorter
 				});
 				atp.engine.initialize();
-				console.log(options.initialvalue);
 				if(atp.verify(options.initialvalue)) {
 					var _cloned_value = _.clone(options.initialvalue);
 					atp.value = options.initialvalue;
