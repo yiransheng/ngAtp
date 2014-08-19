@@ -35,7 +35,7 @@ mytemplate.html:
 
 ## Details
 
-`ngAtp` implements Twitter `Bloodhound` as a `Angular` service, `ngBloodhound` uses `Angular`'s `$http` service as opposed to `jQuery` `$.ajax` in the original version. Other than that, suggestions are entirely managed by `Bloodhound` with all its prefetching, intelligent caching, fast lookups, and backfilling. On the rendering/directive side of things, `ngAtp` relies on `ng-model` and `ng-repeat` (without filtering, which is handled by `Bloodhound`), and tries to stick to default Angular directives as
+`ngAtp` implements Twitter `Bloodhound` as a `Angular` service, `ngBloodhound` uses `Angular`'s `$http` service as opposed to `jQuery` `$.ajax` in the original version (inspired by [twhitbeck/angular-bloodhound](https://www.github.com/twhitbeck/angular-bloodhound)). Other than that, suggestions are entirely managed by `Bloodhound` with all its prefetching, intelligent caching, fast lookups, and backfilling. On the rendering/directive side of things, `ngAtp` relies on `ng-model` and `ng-repeat` (without filtering, which is handled by `Bloodhound`), and tries to stick to default Angular directives as
 much as possilbe. 
 
 
