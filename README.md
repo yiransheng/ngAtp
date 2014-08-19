@@ -5,7 +5,7 @@
 
 ## Credits
 
-The backbone of `ngAtp` is `ngBloodhound`, which is almost entirely adopted from [twhitbeck](https://www.github.com/twhitbeck)'s [angular-bloodhound](https://www.github.com/twhitbeck/angular-bloodhound), an Angular port of Twitter's [`Bloodhound`](https://github.com/twitter/typeahead.js/blob/master/doc/bloodhound.md). 
+The backbone of `ngAtp` is `ngBloodhound`, which is almost entirely adopted from [twhitbeck](https://www.github.com/twhitbeck)'s `[angular-bloodhound](https://www.github.com/twhitbeck/angular-bloodhound)`, an Angular port of Twitter's [`Bloodhound`](https://github.com/twitter/typeahead.js/blob/master/doc/bloodhound.md). 
 
 ## Quick Start
 
