@@ -950,7 +950,7 @@
 					atp.value = null;
 				} 
 				_.isFunction(options.verify) && (atp.verify = options.verify);
-				_.isFunction(options.format) && (atp.verify = options.format);
+				_.isFunction(options.format) && (atp.format = options.format);
 				atp.initialized = true;
 				atp.showSuggestions = false;
 				return atp;
