@@ -29,7 +29,7 @@
 					remote   : options.remote,
 					local    : options.local,
 					limit    : options.limit,
-					dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return (a[atp._idAttrib] === b[atp._idAttrib]) } :  _.isEqual),
+					dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return a===b || (a && b && a[atp._idAttrib] === b[atp._idAttrib]) } :  _.isEqual),
 					sorter   : options.sorter
 				});
 				atp.engine.initialize();
