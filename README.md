@@ -17,6 +17,7 @@ var _ = require('lodash');
 var angular = require('angular');
 require('ng-atp');  // exports angular.module('ng-atp')
 ```
+### Use:
 
 ```
 <div ng-atp="city" ng-atp-config="cityAutocompleteOpts">
