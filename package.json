@@ -1,5 +1,5 @@
 {
-  "name": "ngAtp",
+  "name": "ng-atp",
   "version": "0.0.1",
   "description": "Angular Autocompleter based on Twitter Bloodhound",
   "main": "dist/js/ngAtp-bundle.js",
