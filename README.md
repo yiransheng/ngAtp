@@ -9,7 +9,7 @@ The backbone of `ngAtp` is `ngBloodhound`, which is almost entirely adopted from
 
 ## Quick Start
 
-Include `dist/js/ngAtp-bundle.js` or `dist/js/ngAtp-bundle.min.js` on your page (or use as a bower component: `bower install ng-atp`).
+Include `dist/js/ng-atp-bundle.js` or `dist/js/ng-atp-bundle.min.js` on your page (or use as a bower component: `bower install ng-atp`).
 
 ```
 <div ng-atp="city" ng-atp-config="cityAutocompleteOpts">
