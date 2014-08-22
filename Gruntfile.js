@@ -1,35 +1,39 @@
 module.exports = function(grunt) {
+	var banner = [
+    '//     <%= pkg.name %> <%= pkg.version %>',
+    '//     <%= pkg.homepage %>',
+    '//     (c) 2014 <%= pkg.author %>',
+    '//     <%= pkg.name %> may be freely distributed under the MIT license.'
+  ].join('\n');
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    concat: {
-			options: {
-        process: function(src, filepath) {
-					return '/* * * \n * ' + filepath + '\n' + ' * * */\n' + src;
-				}
-			},
-			dist: {
-				src: [
-		      'src/ngBloodhound.js',
-		      'src/ngAtp.js',
-	        'src/ng-atp/*.js'
-        ],
-				dest: 'dist/js/<%= pkg.name %>-bundle.js',
-			},
-		},
+    rig : {
+      compile: {
+			  options: {
+				  banner: banner + '\n\n'
+		    },
+		    files: {
+				  'dist/js/<%= pkg.name %>-bundle.js': [
+		        'src/ngAtp.js'
+		      ]
+		    }
+	    }
+
+    },
 		uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
       },
       dist: {
         files: {
-          'dist/js/<%= pkg.name %>-bundle.min.js': ['<%= concat.dist.dest %>']
+          'dist/js/<%= pkg.name %>-bundle.min.js': ['dist/js/<%= pkg.name %>-bundle.js']
         }
       }
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-rigger');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.registerTask('default', ['concat', 'uglify']);
+  grunt.registerTask('default', ['rig', 'uglify']);
 }
 

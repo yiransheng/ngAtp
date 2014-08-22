@@ -672,4 +672,4 @@
             };
         });
     })();
-})(window.angular, window._);
+})(angular, _);
