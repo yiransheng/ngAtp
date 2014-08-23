@@ -54,4 +54,6 @@ much as possilbe.
 
 `Angular`, `Lodash`
 
+## License 
+MIT
 
