@@ -1,4 +1,4 @@
-//     ng-atp 0.0.1
+//     ng-atp 0.0.2
 //     https://github.com/yiransheng/ngAtp
 //     (c) 2014 Yiran Sheng
 //     ng-atp may be freely distributed under the MIT license.
@@ -760,6 +760,8 @@
   				dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return a===b || (a && b && a[atp._idAttrib] === b[atp._idAttrib]) } :  _.isEqual),
   				sorter   : options.sorter
   			});
+  			_.isFunction(options.verify) && (atp.verify = options.verify);
+  			_.isFunction(options.format) && (atp.format = options.format);
   			atp.engine.initialize();
   			if(atp.verify(options.initialvalue)) {
   				var _cloned_value = _.clone(options.initialvalue);
@@ -769,8 +771,6 @@
   			} else {
   				atp.value = null;
   			} 
-  			_.isFunction(options.verify) && (atp.verify = options.verify);
-  			_.isFunction(options.format) && (atp.format = options.format);
   			atp.initialized = true;
   			atp.showSuggestions = false;
   			return atp;
