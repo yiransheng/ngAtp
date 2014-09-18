@@ -29,22 +29,22 @@
 **/
 (function (root, factory) {
   'use strict';
-  angular = angular || root.angular;
+  var _angular = angular || root.angular;
   var lodash = _ || root._; 
-  if(!angular) {
-    throw "Missing Angular base. Include ng-atp after Angular." 
+  if(!_angular) {
+    throw "Missing Angular base. Include ng-atp after Angular."; 
   }
   if(!lodash) {
-    throw "Missing dependency: lodash or underscore."
+    throw "Missing dependency: lodash or underscore.";
     // To-do: remove lodash dependency, or ship a customized version
     // needs: _.isEqual, _.clone, _.uniq, _.isFunction, _.isUndefined, _.findIndex
   }
   if (typeof define === 'function' && define.amd) {
-    define([], factory(angular, lodash));
+    define([], factory(_angular, lodash));
   } else if (typeof exports === 'object') {
-    module.exports = factory(angular, lodash);
+    module.exports = factory(_angular, lodash);
   } else {
-    factory(angular, lodash);
+    factory(_angular, lodash);
   }
 }(this, function (angular, _) {
   //= ngBloodhound.js

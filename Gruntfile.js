@@ -34,5 +34,6 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-rigger');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('default', ['rig', 'uglify']);
+    grunt.registerTask('build', ['rig', 'uglify']);
+    grunt.registerTask('default', ['build'])
 }

@@ -1,4 +1,4 @@
-//     ng-atp 0.0.1
+//     ng-atp 0.0.2
 //     https://github.com/yiransheng/ngAtp
 //     (c) 2014 Yiran Sheng
 //     ng-atp may be freely distributed under the MIT license.
@@ -34,22 +34,22 @@
 **/
 (function (root, factory) {
   'use strict';
-  angular = angular || root.angular;
+  var _angular = angular || root.angular;
   var lodash = _ || root._; 
-  if(!angular) {
-    throw "Missing Angular base. Include ng-atp after Angular." 
+  if(!_angular) {
+    throw "Missing Angular base. Include ng-atp after Angular."; 
   }
   if(!lodash) {
-    throw "Missing dependency: lodash or underscore."
+    throw "Missing dependency: lodash or underscore.";
     // To-do: remove lodash dependency, or ship a customized version
     // needs: _.isEqual, _.clone, _.uniq, _.isFunction, _.isUndefined, _.findIndex
   }
   if (typeof define === 'function' && define.amd) {
-    define([], factory(angular, lodash));
+    define([], factory(_angular, lodash));
   } else if (typeof exports === 'object') {
-    module.exports = factory(angular, lodash);
+    module.exports = factory(_angular, lodash);
   } else {
-    factory(angular, lodash);
+    factory(_angular, lodash);
   }
 }(this, function (angular, _) {
   (function(angular, _) {
@@ -734,7 +734,7 @@
   		return {
   			isEmpty : ATP$isEmpty,
   			startWith : ATP$startWith
-  		}
+  		};
   	});
   
   /* -- divider -- */
@@ -748,6 +748,10 @@
   			atp.query = "";
   			atp.suggestions = [];
   			atp._idAttrib = options.idAttribute;
+        atp.completeOn = options.completeOn || {
+          tab : true,
+          rightArrow : true
+        };
   			atp.engine = new Bloodhound({
   				datumTokenizer : options.datumTokenizer || function(d) {
   					return Bloodhound.tokenizers.whitespace(atp.format(d));
@@ -757,7 +761,7 @@
   				remote   : options.remote,
   				local    : options.local,
   				limit    : options.limit,
-  				dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return a===b || (a && b && a[atp._idAttrib] === b[atp._idAttrib]) } :  _.isEqual),
+  				dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return a===b || (a && b && a[atp._idAttrib] === b[atp._idAttrib]); } :  _.isEqual),
   				sorter   : options.sorter
   			});
   			atp.engine.initialize();
@@ -893,7 +897,7 @@
   		isComplete : function() {
   			return this.format(this.value)===this.query && this.verify(this.value);
   		}
-  	}
+  	};
   }
   
   function ATP$isEmpty(value) {
@@ -924,7 +928,7 @@
   	};
   	$scope.$watch('ATP.query', function(q) {
   		if(helpers.isEmpty(q)) {
-  			$scope.ATP.clear()
+  			$scope.ATP.clear();
   			$scope.ATP.exportValue(null);
   			return;
   		}
@@ -956,7 +960,7 @@
   		};
   		function ATP$Directive$compileATP(tElement, attrs) {
   			return function(scope, element, attrs) {
-  			}
+  			};
   		}
   	
   	}])
@@ -1000,15 +1004,27 @@
   						scope.$apply(function() {
   							scope.ATP.tryComplete();
   						});
-  					} else if (event.keyCode == 9 || event.keyCode == 39) { // tab and right arrow
+  					} else if (event.keyCode == 39) { // right arrow
+              if(!scope.ATP.completeOn.rightArrow) return;
   						if (getCaretPosition(inputElement[0]) < inputElement.val().length) return;
   						event.preventDefault(); 
   						// tab autocompletes 
-  						var suggested = scope.ATP.getSuggested( event.keyCode == 39 );  
+  						var suggested = scope.ATP.getSuggested(true);  
   						scope.$apply(function() {
   							scope.ATP.showSuggestions = !scope.ATP.tryComplete();
   						});
-  					} 
+  					} else if (event.keyCode == 9) { // tab
+              if(!scope.ATP.completeOn.tab) return;
+              if(scope.ATP.selected > -1) {
+                scope.$apply(function() {
+                  scope.ATP.showSuggestions = !scope.ATP.tryComplete();
+                });
+              } else {
+                scope.$apply(function() {
+  							  scope.ATP.showSuggestions = false;
+                })
+              }
+            } 
   				});
   				inputElement.bind('keyup', function(event){
   					var suggested = scope.ATP.getSuggested(true);
@@ -1024,9 +1040,9 @@
   					}, 25);
   				});
   				$document.bind('click', function(event) {
-  					scope.$apply(function(){ scope.ATP.showSuggestions = false });
+  					scope.$apply(function(){ scope.ATP.showSuggestions = false; });
   				});
-  			}
+  			};
   		}
   
   		// DOM Related functions
@@ -1069,7 +1085,7 @@
   					textTransform: input.css('text-transform'),
   					color: 'gray',
   					width : input.css('width')
-  				})
+  				});
   		}
   
   	}])
@@ -1101,9 +1117,9 @@
   							scope.$templateUrl = attrs.templateUrl ? $parse(attrs.templateUrl)(scope) : false; 
   					},
   					post: angular.noop
-  				}
+  				};
   			}
-  		} 
+  		}; 
   	}]);
 
   return ngAtp;
