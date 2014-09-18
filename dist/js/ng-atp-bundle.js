@@ -729,291 +729,291 @@
   })(angular, _);
   var ngAtp = angular.module('ng-atp', ['bloodhound']);
   angular.module('ng-atp')
-  	.factory('ATPStates', ['Bloodhound', ATPStates])
-  	.factory('ATPhelpers', function() {
-  		return {
-  			isEmpty : ATP$isEmpty,
-  			startWith : ATP$startWith
-  		};
-  	});
+    .factory('ATPStates', ['Bloodhound', ATPStates])
+    .factory('ATPhelpers', function() {
+      return {
+        isEmpty : ATP$isEmpty,
+        startWith : ATP$startWith
+      };
+    });
   
   /* -- divider -- */
   
   function ATPStates(Bloodhound) {
-  	return  {
-  		initialized : false,
-  		$new : function(options) {
-  			var atp = Object.create(this);
-  			atp.selected = -1;	
-  			atp.query = "";
-  			atp.suggestions = [];
-  			atp._idAttrib = options.idAttribute;
+    return  {
+      initialized : false,
+      $new : function(options) {
+        var atp = Object.create(this);
+        atp.selected = -1;  
+        atp.query = "";
+        atp.suggestions = [];
+        atp._idAttrib = options.idAttribute;
         atp.completeOn = options.completeOn || {
           tab : true,
           rightArrow : true
         };
-  			atp.engine = new Bloodhound({
-  				datumTokenizer : options.datumTokenizer || function(d) {
-  					return Bloodhound.tokenizers.whitespace(atp.format(d));
-  				},
-  				queryTokenizer : options.queryTokenizer || Bloodhound.tokenizers.whitespace,
-  				prefetch : options.prefetch,
-  				remote   : options.remote,
-  				local    : options.local,
-  				limit    : options.limit,
-  				dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return a===b || (a && b && a[atp._idAttrib] === b[atp._idAttrib]); } :  _.isEqual),
-  				sorter   : options.sorter
-  			});
-  			atp.engine.initialize();
-  			if(atp.verify(options.initialvalue)) {
-  				var _cloned_value = _.clone(options.initialvalue);
-  				atp.value = options.initialvalue;
-  				atp.engine.add([ _cloned_value ]);
-  				atp.query = atp.format(_cloned_value);
-  			} else {
-  				atp.value = null;
-  			} 
-  			_.isFunction(options.verify) && (atp.verify = options.verify);
-  			_.isFunction(options.format) && (atp.format = options.format);
-  			atp.initialized = true;
-  			atp.showSuggestions = false;
-  			return atp;
-  		},
-  		verify : function(d) { return d !== null; },
-  		format : function(d) {
-  			return  d ? d.value : '';
-  		},
-  		clear : function() {
-  			this.selected = -1;
-  			this.suggestions.length = 0;	
-  			this.showSuggestions = false;
-  		},
-  		getByIndex : function(i) {
-  			if(i<0 || i>=this.suggestions.length) return null;
-  			return this.suggestions[i]; 
-  		},
-  		select : function(index) {
-  			index = +index;
-  			var n = this.suggestions.length;
-  			if(n === 0) return(this.selected = -1);
-  			if(this.selected === 0 && index<0) return 0;
-  			if(this.selected === n - 1 && index>=n) return n-1;
-  			return(this.selected = index);
-  		},
-  		search : function(str) {
-  			if(!_.isUndefined(str)) {
-  				this.query = str;
-  			} else {
-  				str = this.query;
-  			}
-  			if(ATP$isEmpty(str)) {
-  				this.clear();
-  				return;
-  			} 
-  			this.value = null;
-  			this.exportValue(null);
-  			this.engine.get(str, function(results) {
-  				if(ATP$isEmpty(this.query)) {
-  					this.showSuggestions = false;
-  				} else {
-  					this.showSuggestions = true;
-  				}
-  				if(!this.isComplete()) {
-  					var suggestions = results.concat(this.suggestions); 
-  					var attr = this._idAttrib;
-  					if(attr) {
-  						this.suggestions = _.uniq(suggestions, function(s) {
-  							return u[attr];
-  						});
-  					} else {
-  						this.suggestions = _.uniq(suggestions, function(s) {
-  							return this.format(s);
-  						}.bind(this));
-  					}
-  				}
-  			}.bind(this));  	
-  		},
-  		// get the best match from current suggestions list, 
-  		// if matching_start is set to true, then returned 
-  		// suggestion has to start with the query string
-  		// returns null if no match found
-  		getSuggested : function(matching_start) {
-  			if(this.suggestions.length === 0) return null;
-  			if(this.suggestions.length === 1) {
-  				if(!matching_start) {
-  					return this.suggestions[0];
-  				} else {
-  					var suggested = this.format(this.suggestions[0]);
-  					return ATP$startWith(suggested, this.query) ? this.suggestions[0] : null;
-  				}
-  			}
-  			// if none is selected find and select the first item
-  			// starts with the query (if matching_start flag is used)
-  			// however, when there is a selected item, ignore matching start requirement
-  			if(this.selected === -1) {
-  				if(!matching_start) {
-  					return this.suggestions[0];
-  				} else {
-  					return _.find(this.suggestions, function(d, index) {
-  						var suggested = this.format(d);
-  						if(ATP$startWith(suggested, this.query)) {
-  							this.select(index);
-  							return true;
-  						}
-  						return false;
-  					}, this) || null;
-  				}        
-  			} else {
-  				return this.getByIndex(this.selected);
-  			}
-  		},
-  		exportValue : angular.noop,
-  		tryComplete : function(i) {
-  			if(this.isComplete()) return true;
-  			var suggested = _.isUndefined(i) ? this.getSuggested() : this.suggestions[i];  	
-  			var out;
-  			if(this.verify(suggested)) {
-  				this.value = suggested;
-  				this.query = this.format(suggested);
-  				out = _.clone(this.value);
-  				this.exportValue(out);
-  				this.clear();
-  				return true;
-  			} else {
-  				this.exportValue(null);
-  				return false;
-  			}
-  		},
-  		tryCompleteExact : function() {
-  			var suggested = _.findIndex(this.suggestions, function(s) {
-  				return this.format(s).toLowerCase() === this.query.toLowerCase();
-  			}, this);
-  			if(suggested>-1) {
-  				return this.tryComplete(suggested);
-  			} else {
-  				return false;
-  			}
-  		},
-  		isComplete : function() {
-  			return this.format(this.value)===this.query && this.verify(this.value);
-  		}
-  	};
+        atp.engine = new Bloodhound({
+          datumTokenizer : options.datumTokenizer || function(d) {
+            return Bloodhound.tokenizers.whitespace(atp.format(d));
+          },
+          queryTokenizer : options.queryTokenizer || Bloodhound.tokenizers.whitespace,
+          prefetch : options.prefetch,
+          remote   : options.remote,
+          local    : options.local,
+          limit    : options.limit,
+          dupDetector: options.dupDetector || (atp._idAttrib ? function(a,b){ return a===b || (a && b && a[atp._idAttrib] === b[atp._idAttrib]); } :  _.isEqual),
+          sorter   : options.sorter
+        });
+        atp.engine.initialize();
+        if(atp.verify(options.initialvalue)) {
+          var _cloned_value = _.clone(options.initialvalue);
+          atp.value = options.initialvalue;
+          atp.engine.add([ _cloned_value ]);
+          atp.query = atp.format(_cloned_value);
+        } else {
+          atp.value = null;
+        } 
+        _.isFunction(options.verify) && (atp.verify = options.verify);
+        _.isFunction(options.format) && (atp.format = options.format);
+        atp.initialized = true;
+        atp.showSuggestions = false;
+        return atp;
+      },
+      verify : function(d) { return d !== null; },
+      format : function(d) {
+        return  d ? d.value : '';
+      },
+      clear : function() {
+        this.selected = -1;
+        this.suggestions.length = 0;  
+        this.showSuggestions = false;
+      },
+      getByIndex : function(i) {
+        if(i<0 || i>=this.suggestions.length) return null;
+        return this.suggestions[i]; 
+      },
+      select : function(index) {
+        index = +index;
+        var n = this.suggestions.length;
+        if(n === 0) return(this.selected = -1);
+        if(this.selected === 0 && index<0) return 0;
+        if(this.selected === n - 1 && index>=n) return n-1;
+        return(this.selected = index);
+      },
+      search : function(str) {
+        if(!_.isUndefined(str)) {
+          this.query = str;
+        } else {
+          str = this.query;
+        }
+        if(ATP$isEmpty(str)) {
+          this.clear();
+          return;
+        } 
+        this.value = null;
+        this.exportValue(null);
+        this.engine.get(str, function(results) {
+          if(ATP$isEmpty(this.query)) {
+            this.showSuggestions = false;
+          } else {
+            this.showSuggestions = true;
+          }
+          if(!this.isComplete()) {
+            var suggestions = results.concat(this.suggestions); 
+            var attr = this._idAttrib;
+            if(attr) {
+              this.suggestions = _.uniq(suggestions, function(s) {
+                return u[attr];
+              });
+            } else {
+              this.suggestions = _.uniq(suggestions, function(s) {
+                return this.format(s);
+              }.bind(this));
+            }
+          }
+        }.bind(this));    
+      },
+      // get the best match from current suggestions list, 
+      // if matching_start is set to true, then returned 
+      // suggestion has to start with the query string
+      // returns null if no match found
+      getSuggested : function(matching_start) {
+        if(this.suggestions.length === 0) return null;
+        if(this.suggestions.length === 1) {
+          if(!matching_start) {
+            return this.suggestions[0];
+          } else {
+            var suggested = this.format(this.suggestions[0]);
+            return ATP$startWith(suggested, this.query) ? this.suggestions[0] : null;
+          }
+        }
+        // if none is selected find and select the first item
+        // starts with the query (if matching_start flag is used)
+        // however, when there is a selected item, ignore matching start requirement
+        if(this.selected === -1) {
+          if(!matching_start) {
+            return this.suggestions[0];
+          } else {
+            return _.find(this.suggestions, function(d, index) {
+              var suggested = this.format(d);
+              if(ATP$startWith(suggested, this.query)) {
+                this.select(index);
+                return true;
+              }
+              return false;
+            }, this) || null;
+          }        
+        } else {
+          return this.getByIndex(this.selected);
+        }
+      },
+      exportValue : angular.noop,
+      tryComplete : function(i) {
+        if(this.isComplete()) return true;
+        var suggested = _.isUndefined(i) ? this.getSuggested() : this.suggestions[i];    
+        var out;
+        if(this.verify(suggested)) {
+          this.value = suggested;
+          this.query = this.format(suggested);
+          out = _.clone(this.value);
+          this.exportValue(out);
+          this.clear();
+          return true;
+        } else {
+          this.exportValue(null);
+          return false;
+        }
+      },
+      tryCompleteExact : function() {
+        var suggested = _.findIndex(this.suggestions, function(s) {
+          return this.format(s).toLowerCase() === this.query.toLowerCase();
+        }, this);
+        if(suggested>-1) {
+          return this.tryComplete(suggested);
+        } else {
+          return false;
+        }
+      },
+      isComplete : function() {
+        return this.format(this.value)===this.query && this.verify(this.value);
+      }
+    };
   }
   
   function ATP$isEmpty(value) {
-  	return angular.isUndefined(value) || value === '' || value === null || value !== value;
+    return angular.isUndefined(value) || value === '' || value === null || value !== value;
   } 
   function ATP$startWith(str, x) {
-  	return (str.length && x.length && str.slice(0, x.length) === x);
+    return (str.length && x.length && str.slice(0, x.length) === x);
   }
   angular.module('ng-atp')
-  	.controller('ATPMainCtrl', ['$scope', '$element', '$parse', 'ATPStates', 'ATPhelpers', ATPMainCtrl]);
+    .controller('ATPMainCtrl', ['$scope', '$element', '$parse', 'ATPStates', 'ATPhelpers', ATPMainCtrl]);
   
   function ATPMainCtrl($scope, $element, $parse, ATPStates, helpers) {
-  	var model = $element.attr('ng-atp');
-  	var config = $element.attr('ng-atp-config') || '';
-  	var _getter = $parse(model);
-  	var _setter = _getter.assign;
-  	var _getter_config = $parse(config);
-  	var parent = $scope.$parent;
-  	var init_val = _getter(parent);
-  	var options = _getter_config(parent);
-  			options = Object.create(options);
-  			options.initialvalue = init_val;
-  	$scope.ATP = ATPStates.$new(options);
-  	$scope.ATP.exportValue = function(value) {
-  		if(_.isEqual( value, _getter(parent) )) return false;
-  		_setter(parent, value);
-  		return true;
-  	};
-  	$scope.$watch('ATP.query', function(q) {
-  		if(helpers.isEmpty(q)) {
-  			$scope.ATP.clear();
-  			$scope.ATP.exportValue(null);
-  			return;
-  		}
-  		if(!$scope.ATP.isComplete()) {
-  			$scope.ATP.search();
-  		} 
-  	});
-  	$scope.$watch('ATP.suggestions', function(suggestions) {
-  		$scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;
-  	});
-  	parent.$watch(function() {
-  		return _getter(parent);
-  	}, function(val) {
-  		var dupDetector = $scope.ATP.engine.dupDetector;
-  		if(!dupDetector(val, $scope.ATP.value)) {
-  			$scope.ATP.value = val;
-  			$scope.ATP.query = $scope.ATP.format(val);
-  			$scope.ATP.showSuggestions = false;
-  		}
-  	}, true);
+    var model = $element.attr('ng-atp');
+    var config = $element.attr('ng-atp-config') || '';
+    var _getter = $parse(model);
+    var _setter = _getter.assign;
+    var _getter_config = $parse(config);
+    var parent = $scope.$parent;
+    var init_val = _getter(parent);
+    var options = _getter_config(parent);
+        options = Object.create(options);
+        options.initialvalue = init_val;
+    $scope.ATP = ATPStates.$new(options);
+    $scope.ATP.exportValue = function(value) {
+      if(_.isEqual( value, _getter(parent) )) return false;
+      _setter(parent, value);
+      return true;
+    };
+    $scope.$watch('ATP.query', function(q) {
+      if(helpers.isEmpty(q)) {
+        $scope.ATP.clear();
+        $scope.ATP.exportValue(null);
+        return;
+      }
+      if(!$scope.ATP.isComplete()) {
+        $scope.ATP.search();
+      } 
+    });
+    $scope.$watch('ATP.suggestions', function(suggestions) {
+      $scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;
+    });
+    parent.$watch(function() {
+      return _getter(parent);
+    }, function(val) {
+      var dupDetector = $scope.ATP.engine.dupDetector;
+      if(!dupDetector(val, $scope.ATP.value)) {
+        $scope.ATP.value = val;
+        $scope.ATP.query = $scope.ATP.format(val);
+        $scope.ATP.showSuggestions = false;
+      }
+    }, true);
   }
   angular.module('ng-atp')
   .directive('ngAtp', ['$parse', function($parse) {
-  		return {
-  			restrict: 'AE',
-  			compile : ATP$Directive$compileATP,
-  			scope : true,
-  			controller: 'ATPMainCtrl'
-  		};
-  		function ATP$Directive$compileATP(tElement, attrs) {
-  			return function(scope, element, attrs) {
-  			};
-  		}
-  	
-  	}])
+      return {
+        restrict: 'AE',
+        compile : ATP$Directive$compileATP,
+        scope : true,
+        controller: 'ATPMainCtrl'
+      };
+      function ATP$Directive$compileATP(tElement, attrs) {
+        return function(scope, element, attrs) {
+        };
+      }
+    
+    }])
   .directive('ngAtpInput', 
-  	['$compile', '$parse', '$document', '$timeout', 'ATPhelpers',
-  	function($compile, $parse, $document, $timeout, helpers) {
-  		return {
-  			restrict : 'A',
-  			require: '^ngAtp',
-  			terminal : true,
-  			compile : ATP$Directive$compileATPInput,
-  			scope: false
-  		};
-  	
-  		function ATP$Directive$compileATPInput(tElement, attrs) {
-  			var require_recompile = !attrs.ngModel;
-  			require_recompile && tElement.attr('ng-model','ATP.query');
-  			return function(scope, inputElement, attrs) {
-  				if(require_recompile) {
-  					$compile(inputElement)(scope);
-  					return;
-  				}
-  				var hint = bulidHint(inputElement);
-  				hint.attr('ng-show', 'ATP.showSuggestions');
-  				inputElement.parent()[0].insertBefore(hint[0], inputElement[0]);
-  				$compile(hint)(scope);
-  				inputElement.bind('keydown', function(event) {
-  					hint.val('');
-  					if(event.keyCode==40) {  // down
-  						if(scope.ATP.suggestions.length > 0) event.preventDefault();
-  						scope.$apply(function() {
-  							scope.ATP.select(scope.ATP.selected + 1);
-  						});
-  					} else if (event.keyCode == 38) { // up
-  						if(scope.ATP.suggestions.length > 0) event.preventDefault();
-  						scope.$apply(function() {
-  							scope.ATP.select(scope.ATP.selected - 1);
-  						});
-  					} else if (event.keyCode == 13) { // enter
-  						event.preventDefault();
-  						scope.$apply(function() {
-  							scope.ATP.tryComplete();
-  						});
-  					} else if (event.keyCode == 39) { // right arrow
+    ['$compile', '$parse', '$document', '$timeout', 'ATPhelpers',
+    function($compile, $parse, $document, $timeout, helpers) {
+      return {
+        restrict : 'A',
+        require: '^ngAtp',
+        terminal : true,
+        compile : ATP$Directive$compileATPInput,
+        scope: false
+      };
+    
+      function ATP$Directive$compileATPInput(tElement, attrs) {
+        var require_recompile = !attrs.ngModel;
+        require_recompile && tElement.attr('ng-model','ATP.query');
+        return function(scope, inputElement, attrs) {
+          if(require_recompile) {
+            $compile(inputElement)(scope);
+            return;
+          }
+          var hint = bulidHint(inputElement);
+          hint.attr('ng-show', 'ATP.showSuggestions');
+          inputElement.parent()[0].insertBefore(hint[0], inputElement[0]);
+          $compile(hint)(scope);
+          inputElement.bind('keydown', function(event) {
+            hint.val('');
+            if(event.keyCode==40) {  // down
+              if(scope.ATP.suggestions.length > 0) event.preventDefault();
+              scope.$apply(function() {
+                scope.ATP.select(scope.ATP.selected + 1);
+              });
+            } else if (event.keyCode == 38) { // up
+              if(scope.ATP.suggestions.length > 0) event.preventDefault();
+              scope.$apply(function() {
+                scope.ATP.select(scope.ATP.selected - 1);
+              });
+            } else if (event.keyCode == 13) { // enter
+              event.preventDefault();
+              scope.$apply(function() {
+                scope.ATP.tryComplete();
+              });
+            } else if (event.keyCode == 39) { // right arrow
               if(!scope.ATP.completeOn.rightArrow) return;
-  						if (getCaretPosition(inputElement[0]) < inputElement.val().length) return;
-  						event.preventDefault(); 
-  						// tab autocompletes 
-  						var suggested = scope.ATP.getSuggested(true);  
-  						scope.$apply(function() {
-  							scope.ATP.showSuggestions = !scope.ATP.tryComplete();
-  						});
-  					} else if (event.keyCode == 9) { // tab
+              if (getCaretPosition(inputElement[0]) < inputElement.val().length) return;
+              event.preventDefault(); 
+              // tab autocompletes 
+              var suggested = scope.ATP.getSuggested(true);  
+              scope.$apply(function() {
+                scope.ATP.showSuggestions = !scope.ATP.tryComplete();
+              });
+            } else if (event.keyCode == 9) { // tab
               if(!scope.ATP.completeOn.tab) return;
               if(scope.ATP.selected > -1) {
                 scope.$apply(function() {
@@ -1021,106 +1021,106 @@
                 });
               } else {
                 scope.$apply(function() {
-  							  scope.ATP.showSuggestions = false;
+                  scope.ATP.showSuggestions = false;
                 })
               }
             } 
-  				});
-  				inputElement.bind('keyup', function(event){
-  					var suggested = scope.ATP.getSuggested(true);
-  					var val = scope.ATP.format(suggested);
-  					if(scope.ATP.showSuggestions && helpers.startWith(val, inputElement.val())) {
-  						hint.val(val);
-  					}
-  				});
-  				inputElement.bind('click', function(event){ event.stopPropagation(); });
-  				inputElement.bind('blur', function(event) {
-  					$timeout(function() {
-  						scope.ATP.showSuggested = false;
-  					}, 25);
-  				});
-  				$document.bind('click', function(event) {
-  					scope.$apply(function(){ scope.ATP.showSuggestions = false; });
-  				});
-  			};
-  		}
+          });
+          inputElement.bind('keyup', function(event){
+            var suggested = scope.ATP.getSuggested(true);
+            var val = scope.ATP.format(suggested);
+            if(scope.ATP.showSuggestions && helpers.startWith(val, inputElement.val())) {
+              hint.val(val);
+            }
+          });
+          inputElement.bind('click', function(event){ event.stopPropagation(); });
+          inputElement.bind('blur', function(event) {
+            $timeout(function() {
+              scope.ATP.showSuggested = false;
+            }, 25);
+          });
+          $document.bind('click', function(event) {
+            scope.$apply(function(){ scope.ATP.showSuggestions = false; });
+          });
+        };
+      }
   
-  		// DOM Related functions
-  		function getCaretPosition (oField) {
-  			var iCaretPos = 0;
-  			// IE Support
-  			if (document.selection) {
+      // DOM Related functions
+      function getCaretPosition (oField) {
+        var iCaretPos = 0;
+        // IE Support
+        if (document.selection) {
   
-  				// Set focus on the element
-  				oField.focus ();
+          // Set focus on the element
+          oField.focus ();
   
-  				// To get cursor position, get empty selection range
-  				var oSel = document.selection.createRange ();
+          // To get cursor position, get empty selection range
+          var oSel = document.selection.createRange ();
   
-  				// Move selection start to 0 position
-  				oSel.moveStart ('character', -oField.value.length);
+          // Move selection start to 0 position
+          oSel.moveStart ('character', -oField.value.length);
   
-  				// The caret position is selection length
-  				iCaretPos = oSel.text.length;
-  			}
+          // The caret position is selection length
+          iCaretPos = oSel.text.length;
+        }
   
-  			// Firefox support
-  			else if (oField.selectionStart || oField.selectionStart == '0')
-  				iCaretPos = oField.selectionStart;
-  			return (iCaretPos);
-  		}
-  		// jQuery|jqLite -> jQuery | jqLite
-  		function bulidHint(input) {
-  			return angular.element('<input class="tt-hint" type="text" autocomplete="false" spellcheck="false" disabled>')
-  				.css({
-  					fontFamily: input.css('font-family'),
-  					fontSize: input.css('font-size'),
-  					fontStyle: input.css('font-style'),
-  					fontVariant: input.css('font-variant'),
-  					fontWeight: input.css('font-weight'),
-  					wordSpacing: input.css('word-spacing'),
-  					letterSpacing: input.css('letter-spacing'),
-  					textIndent: input.css('text-indent'),
-  					textRendering: input.css('text-rendering'),
-  					textTransform: input.css('text-transform'),
-  					color: 'gray',
-  					width : input.css('width')
-  				});
-  		}
+        // Firefox support
+        else if (oField.selectionStart || oField.selectionStart == '0')
+          iCaretPos = oField.selectionStart;
+        return (iCaretPos);
+      }
+      // jQuery|jqLite -> jQuery | jqLite
+      function bulidHint(input) {
+        return angular.element('<input class="tt-hint" type="text" autocomplete="false" spellcheck="false" disabled>')
+          .css({
+            fontFamily: input.css('font-family'),
+            fontSize: input.css('font-size'),
+            fontStyle: input.css('font-style'),
+            fontVariant: input.css('font-variant'),
+            fontWeight: input.css('font-weight'),
+            wordSpacing: input.css('word-spacing'),
+            letterSpacing: input.css('letter-spacing'),
+            textIndent: input.css('text-indent'),
+            textRendering: input.css('text-rendering'),
+            textTransform: input.css('text-transform'),
+            color: 'gray',
+            width : input.css('width')
+          });
+      }
   
-  	}])
+    }])
   .directive('ngAtpSuggestions', ['$parse', '$compile', function($parse, $compile) { 
-  		var template = ['<li ', 
-  									'ng-repeat="suggestion in ATP.suggestions track by (ATP._idAttrib ? suggestion[ATP._idAttrib] : $id(suggestion))"',
-  									'ng-click="ATP.tryComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
-  									'ng-class="{ selected : $index == ATP.selected }" ',
-  									'ng-mouseover="ATP.select($index)">', 
-  									'<ng-switch on="$templateUrl">',
-  									'  <span ng-switch-when="false">{{ ATP.format(suggestion) }}</span>',
-  									'  <ng-switch-default><ng-include src="$templateUrl"></ng-include></ng-switch-default>',
-  									'</ng-switch>',
-  									'</li>'].join('');
-  		return {
-  			require  : '^ngAtp',
-  			restrict : 'AE',
-  			scope : false,
-  			compile  : function(element, attrs) {
-  				var require_recompile = !attrs.ngShow;
-  				element.attr('ng-show', 'ATP.showSuggestions');
-  				return {
-  					pre: function(scope, element, attrs){ 
-  							if(require_recompile) {
-  								element[0].innerHTML = template;
-  								$compile(element)(scope);
-  								return;
-  							}
-  							scope.$templateUrl = attrs.templateUrl ? $parse(attrs.templateUrl)(scope) : false; 
-  					},
-  					post: angular.noop
-  				};
-  			}
-  		}; 
-  	}]);
+      var template = ['<li ', 
+                    'ng-repeat="suggestion in ATP.suggestions track by (ATP._idAttrib ? suggestion[ATP._idAttrib] : $id(suggestion))"',
+                    'ng-click="ATP.tryComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
+                    'ng-class="{ selected : $index == ATP.selected }" ',
+                    'ng-mouseover="ATP.select($index)">', 
+                    '<ng-switch on="$templateUrl">',
+                    '  <span ng-switch-when="false">{{ ATP.format(suggestion) }}</span>',
+                    '  <ng-switch-default><ng-include src="$templateUrl"></ng-include></ng-switch-default>',
+                    '</ng-switch>',
+                    '</li>'].join('');
+      return {
+        require  : '^ngAtp',
+        restrict : 'AE',
+        scope : false,
+        compile  : function(element, attrs) {
+          var require_recompile = !attrs.ngShow;
+          element.attr('ng-show', 'ATP.showSuggestions');
+          return {
+            pre: function(scope, element, attrs){ 
+                if(require_recompile) {
+                  element[0].innerHTML = template;
+                  $compile(element)(scope);
+                  return;
+                }
+                scope.$templateUrl = attrs.templateUrl ? $parse(attrs.templateUrl)(scope) : false; 
+            },
+            post: angular.noop
+          };
+        }
+      }; 
+    }]);
 
   return ngAtp;
 }));
