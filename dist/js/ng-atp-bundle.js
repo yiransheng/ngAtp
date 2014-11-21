@@ -762,6 +762,8 @@
           tab : true,
           rightArrow : true
         };
+        _.isFunction(options.verify) && (atp.verify = options.verify);
+        _.isFunction(options.format) && (atp.format = options.format);
         atp.engine = new Bloodhound({
           datumTokenizer : options.datumTokenizer || function(d) {
             return Bloodhound.tokenizers.whitespace(atp.format(d));
@@ -783,8 +785,6 @@
         } else {
           atp.value = null;
         } 
-        _.isFunction(options.verify) && (atp.verify = options.verify);
-        _.isFunction(options.format) && (atp.format = options.format);
         atp.initialized = true;
         atp.showSuggestions = false;
         return atp;
@@ -833,7 +833,7 @@
             var attr = this._idAttrib;
             if(attr) {
               this.suggestions = _.uniq(suggestions, function(s) {
-                return u[attr];
+                return s[attr];
               });
             } else {
               this.suggestions = _.uniq(suggestions, function(s) {
