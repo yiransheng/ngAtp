@@ -1,7 +1,7 @@
 angular.module('ng-atp')
-  .controller('ATPMainCtrl', ['$scope', '$element', '$parse', 'ATPStates', 'ATPhelpers', ATPMainCtrl]);
+  .controller('ATPMainCtrl', ['$scope', '$element', '$parse', 'ATPStates', 'ATPhelpers', 'ATPEvents', ATPMainCtrl]);
 
-function ATPMainCtrl($scope, $element, $parse, ATPStates, helpers) {
+function ATPMainCtrl($scope, $element, $parse, ATPStates, helpers, events) {
   var model = $element.attr('ng-atp');
   var config = $element.attr('ng-atp-config') || '';
   var _getter = $parse(model);
@@ -13,6 +13,10 @@ function ATPMainCtrl($scope, $element, $parse, ATPStates, helpers) {
       options = Object.create(options);
       options.initialvalue = init_val;
   $scope.ATP = ATPStates.$new(options);
+  $scope.ATP.modelExpression = model;
+  $scope.ATP.importValue = function() {
+     return _getter(parent);
+  };
   $scope.ATP.exportValue = function(value) {
     if(_.isEqual( value, _getter(parent) )) return false;
     _setter(parent, value);
@@ -29,7 +33,15 @@ function ATPMainCtrl($scope, $element, $parse, ATPStates, helpers) {
     } 
   });
   $scope.$watch('ATP.suggestions', function(suggestions) {
-    $scope.ATP.showSuggestions = suggestions.length ? !$scope.ATP.tryCompleteExact() : false;
+    var manualComplete = $scope.ATP.tryCompleteExact();
+    $scope.ATP.showSuggestions = suggestions.length ? !manualComplete : false;
+    if (manualComplete) {
+      $scope.$emit(events.COMPLETE, {
+        value : $scope.ATP.importValue(), 
+        triggeredBy : events.triggers.manual,
+        model : $scope.ATP.modelExpression
+      });  
+    }
   });
   parent.$watch(function() {
     return _getter(parent);

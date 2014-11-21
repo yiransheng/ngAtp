@@ -26,6 +26,10 @@ function MyCtrl($scope) {
   $scope.clearCity = function() {
     $scope.city = null;
   }
+  $scope.$on('ngAtp:autocomplete', function(e, data) {
+    console.log(e); 
+    console.log(data);
+  });
   $scope.city={ value: "Sigil", id: "1" };
   $scope.city2={ value: "Amn", id: "2" };
   $scope.cityAutocompleteOpts = {

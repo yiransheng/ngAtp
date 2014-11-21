@@ -5,6 +5,16 @@ angular.module('ng-atp')
       isEmpty : ATP$isEmpty,
       startWith : ATP$startWith
     };
+  })
+  .constant('ATPEvents', {
+    COMPLETE : 'ngAtp:autocomplete',
+    triggers : {
+      enter : 'ENTER',
+      manual: 'MANUAL', 
+      click : 'CLICK',
+      tab : 'TAB',
+      rightArrow : 'RIGHT_ARROW'
+    }
   });
 
 /* -- divider -- */

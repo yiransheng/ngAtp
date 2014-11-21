@@ -13,8 +13,8 @@ angular.module('ng-atp')
   
   }])
 .directive('ngAtpInput', 
-  ['$compile', '$parse', '$document', '$timeout', 'ATPhelpers',
-  function($compile, $parse, $document, $timeout, helpers) {
+  ['$compile', '$parse', '$document', '$timeout', 'ATPhelpers', 'ATPEvents',
+  function($compile, $parse, $document, $timeout, helpers, events) {
     return {
       restrict : 'A',
       require: '^ngAtp',
@@ -50,7 +50,13 @@ angular.module('ng-atp')
           } else if (event.keyCode == 13) { // enter
             event.preventDefault();
             scope.$apply(function() {
-              scope.ATP.tryComplete();
+              if ( scope.ATP.tryComplete() ) {
+                scope.$emit(events.COMPLETE, {
+                  value : scope.ATP.importValue(), 
+                  triggeredBy : events.triggers.enter,
+                  model : scope.ATP.modelExpression
+                });  
+              }
             });
           } else if (event.keyCode == 39) { // right arrow
             if(!scope.ATP.completeOn.rightArrow) return;
@@ -60,12 +66,28 @@ angular.module('ng-atp')
             var suggested = scope.ATP.getSuggested(true);  
             scope.$apply(function() {
               scope.ATP.showSuggestions = !scope.ATP.tryComplete();
+              // autocomplete is successful
+              if ( !scope.ATP.showSuggestions ) {
+                scope.$emit(events.COMPLETE, {
+                  value : scope.ATP.importValue(), 
+                  triggeredBy : events.triggers.rightArrow,
+                  model : scope.ATP.modelExpression
+                });  
+              }
             });
           } else if (event.keyCode == 9) { // tab
             if(!scope.ATP.completeOn.tab) return;
             if(scope.ATP.selected > -1) {
               scope.$apply(function() {
                 scope.ATP.showSuggestions = !scope.ATP.tryComplete();
+                // autocomplete is successful 
+                if ( !scope.ATP.showSuggestions ) {
+                  scope.$emit(events.COMPLETE, {
+                    value : scope.ATP.importValue(), 
+                    triggeredBy : events.triggers.tab,
+                    model : scope.ATP.modelExpression
+                  });  
+                }
               });
             } else {
               scope.$apply(function() {
