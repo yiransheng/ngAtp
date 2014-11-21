@@ -18,6 +18,7 @@ function ATPMainCtrl($scope, $element, $parse, ATPStates, helpers, events) {
      return _getter(parent);
   };
   $scope.onClickSuggestion = function(i) {
+    console.log(i);
     var clickComplete = $scope.ATP.tryComplete(i);
     $scope.ATP.showSuggestions = !clickComplete;
     if (clickComplete) {

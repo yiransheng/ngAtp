@@ -936,6 +936,7 @@
        return _getter(parent);
     };
     $scope.onClickSuggestion = function(i) {
+      console.log(i);
       var clickComplete = $scope.ATP.tryComplete(i);
       $scope.ATP.showSuggestions = !clickComplete;
       if (clickComplete) {
@@ -1147,7 +1148,7 @@
   .directive('ngAtpSuggestions', ['$parse', '$compile', function($parse, $compile) { 
       var template = ['<li ', 
                     'ng-repeat="suggestion in ATP.suggestions track by (ATP._idAttrib ? suggestion[ATP._idAttrib] : $id(suggestion))"',
-                    'ng-click="onClickComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
+                    'ng-click="onClickSuggestion($index); $event.stopPropagation(); $event.preventDefault()" ', 
                     'ng-class="{ selected : $index == ATP.selected }" ',
                     'ng-mouseover="ATP.select($index)">', 
                     '<ng-switch on="$templateUrl">',
