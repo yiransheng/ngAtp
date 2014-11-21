@@ -935,6 +935,17 @@
     $scope.ATP.importValue = function() {
        return _getter(parent);
     };
+    $scope.onClickSuggestion = function(i) {
+      var clickComplete = $scope.ATP.tryComplete(i);
+      $scope.ATP.showSuggestions = !clickComplete;
+      if (clickComplete) {
+        $scope.$emit(events.COMPLETE, {
+          value : $scope.ATP.importValue(), 
+          triggeredBy : events.triggers.click,
+          model : $scope.ATP.modelExpression
+        });  
+      }
+    };
     $scope.ATP.exportValue = function(value) {
       if(_.isEqual( value, _getter(parent) )) return false;
       _setter(parent, value);
@@ -1136,7 +1147,7 @@
   .directive('ngAtpSuggestions', ['$parse', '$compile', function($parse, $compile) { 
       var template = ['<li ', 
                     'ng-repeat="suggestion in ATP.suggestions track by (ATP._idAttrib ? suggestion[ATP._idAttrib] : $id(suggestion))"',
-                    'ng-click="ATP.tryComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
+                    'ng-click="onClickComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
                     'ng-class="{ selected : $index == ATP.selected }" ',
                     'ng-mouseover="ATP.select($index)">', 
                     '<ng-switch on="$templateUrl">',

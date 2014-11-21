@@ -17,6 +17,17 @@ function ATPMainCtrl($scope, $element, $parse, ATPStates, helpers, events) {
   $scope.ATP.importValue = function() {
      return _getter(parent);
   };
+  $scope.onClickSuggestion = function(i) {
+    var clickComplete = $scope.ATP.tryComplete(i);
+    $scope.ATP.showSuggestions = !clickComplete;
+    if (clickComplete) {
+      $scope.$emit(events.COMPLETE, {
+        value : $scope.ATP.importValue(), 
+        triggeredBy : events.triggers.click,
+        model : $scope.ATP.modelExpression
+      });  
+    }
+  };
   $scope.ATP.exportValue = function(value) {
     if(_.isEqual( value, _getter(parent) )) return false;
     _setter(parent, value);

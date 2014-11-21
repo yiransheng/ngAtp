@@ -162,7 +162,7 @@ angular.module('ng-atp')
 .directive('ngAtpSuggestions', ['$parse', '$compile', function($parse, $compile) { 
     var template = ['<li ', 
                   'ng-repeat="suggestion in ATP.suggestions track by (ATP._idAttrib ? suggestion[ATP._idAttrib] : $id(suggestion))"',
-                  'ng-click="ATP.tryComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
+                  'ng-click="onClickComplete($index); $event.stopPropagation(); $event.preventDefault()" ', 
                   'ng-class="{ selected : $index == ATP.selected }" ',
                   'ng-mouseover="ATP.select($index)">', 
                   '<ng-switch on="$templateUrl">',
