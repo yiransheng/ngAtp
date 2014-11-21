@@ -33,7 +33,12 @@ function MyCtrl($scope) {
   $scope.city={ name: "Sigil", key: 12121 };
   $scope.cityAutocompleteOpts = {
     prefetch : 'data.json',
-    remote: 'https://graph.facebook.com/search?type=adgeolocation&location_types=city&q=%QUERY',
+    remote: { 
+      url : 'https://graph.facebook.com/search?type=adgeolocation&location_types=city&q=%QUERY',
+      filter : function (res) {
+        return res.data;
+      }
+    },
     verify : function(datum) {
       return datum && _.has(datum, 'name');
     },
