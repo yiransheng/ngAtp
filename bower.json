@@ -6,7 +6,7 @@
     "Yiran Sheng <shengyiran@gmail.com>"
   ],
   "description": "Angular Autocompleter based on Twitter Bloodhound",
-  "main": "dist/js/ng-atp-bundle.js",
+  "main": ["dist/js/ng-atp-bundle.js", "dist/css/ng-atp.css"],
   "keywords": [
     "Angular",
     "Bloodhound",
