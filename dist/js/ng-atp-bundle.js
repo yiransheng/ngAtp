@@ -1129,6 +1129,7 @@
       function bulidHint(input) {
         return angular.element('<input class="tt-hint" type="text" autocomplete="false" spellcheck="false" disabled>')
           .css({
+            padding: input.css('padding'),
             fontFamily: input.css('font-family'),
             fontSize: input.css('font-size'),
             fontStyle: input.css('font-style'),
