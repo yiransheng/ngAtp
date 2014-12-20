@@ -1,6 +1,6 @@
 {
   "name": "ng-atp",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "homepage": "https://github.com/yiransheng/ngAtp",
   "authors": [
     "Yiran Sheng <shengyiran@gmail.com>"
@@ -21,7 +21,6 @@
     "examples"
   ],
   "dependencies": {
-    "lodash": "~2.4.1",
     "angular": "~1.2.22"
   },
   "repository": {

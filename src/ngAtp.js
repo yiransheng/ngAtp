@@ -30,21 +30,15 @@
 (function (root, factory) {
   'use strict';
   var _angular = angular || root.angular;
-  var lodash = _ || root._; 
-  if(!_angular) {
-    throw "Missing Angular base. Include ng-atp after Angular."; 
-  }
-  if(!lodash) {
-    throw "Missing dependency: lodash or underscore.";
-    // To-do: remove lodash dependency, or ship a customized version
-    // needs: _.isEqual, _.clone, _.uniq, _.isFunction, _.isUndefined, _.findIndex
+  if (!_angular) {
+    throw "Missing Angular base. Include ng-atp after Angular.";
   }
   if (typeof define === 'function' && define.amd) {
-    define([], factory(_angular, lodash));
+    define([], factory(_angular));
   } else if (typeof exports === 'object') {
-    module.exports = factory(_angular, lodash);
+    module.exports = factory(_angular);
   } else {
-    factory(_angular, lodash);
+    factory(_angular);
   }
 }(this, function (angular, _) {
   //= ngBloodhound.js
@@ -52,6 +46,7 @@
   //= atp-services.js
   //= atp-controllers.js
   //= atp-directives.js
+  //= polyfill.js
 
   return ngAtp;
 }));

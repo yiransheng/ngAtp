@@ -57,7 +57,7 @@ much as possilbe.
 
 ## Dependencies
 
-`Angular`, `Lodash`
+`Angular`
 
 ## License 
 MIT

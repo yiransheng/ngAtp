@@ -1,10 +1,10 @@
-(function(angular, _) {
+(function (angular) {
     var VERSION = "0.10.2";
-    (function() {
+    (function () {
         "use strict";
         var module = angular.module("bloodhound.tokenizers", []);
-        module.factory("tokenizers", function() {
-            var tokenizers = function() {
+        module.factory("tokenizers", function () {
+            var tokenizers = function () {
                 return {
                     nonword: nonword,
                     whitespace: whitespace,
@@ -13,12 +13,15 @@
                         whitespace: getObjTokenizer(whitespace)
                     }
                 };
+
                 function whitespace(s) {
                     return s.split(/\s+/);
                 }
+
                 function nonword(s) {
                     return s.split(/\W+/);
                 }
+
                 function getObjTokenizer(tokenizer) {
                     return function setKey(key) {
                         return function tokenize(o) {
@@ -30,11 +33,11 @@
             return tokenizers;
         });
     })();
-    (function() {
+    (function () {
         "use strict";
         var module = angular.module("bloodhound.lru-cache", []);
-        module.factory("LruCache", function() {
-            var LruCache = function() {
+        module.factory("LruCache", function () {
+            var LruCache = function () {
                 function LruCache(maxSize) {
                     this.maxSize = maxSize || 100;
                     this.size = 0;
@@ -43,7 +46,8 @@
                 }
                 angular.extend(LruCache.prototype, {
                     set: function set(key, val) {
-                        var tailItem = this.list.tail, node;
+                        var tailItem = this.list.tail,
+                            node;
                         if (this.size >= this.maxSize) {
                             this.list.remove(tailItem);
                             delete this.hash[tailItem.key];
@@ -66,6 +70,7 @@
                         }
                     }
                 });
+
                 function List() {
                     this.head = this.tail = null;
                 }
@@ -82,11 +87,12 @@
                         node.prev ? node.prev.next = node.next : this.head = node.next;
                         node.next ? node.next.prev = node.prev : this.tail = node.prev;
                     },
-                    moveToFront: function(node) {
+                    moveToFront: function (node) {
                         this.remove(node);
                         this.add(node);
                     }
                 });
+
                 function Node(key, val) {
                     this.key = key;
                     this.val = val;
@@ -97,11 +103,11 @@
             return LruCache;
         });
     })();
-    (function() {
+    (function () {
         "use strict";
         var module = angular.module("bloodhound.persistent-storage", []);
-        module.factory("PersistentStorage", function() {
-            var PersistentStorage = function() {
+        module.factory("PersistentStorage", function () {
+            var PersistentStorage = function () {
                 var ls, methods;
                 try {
                     ls = window.localStorage;
@@ -110,26 +116,27 @@
                 } catch (err) {
                     ls = null;
                 }
+
                 function PersistentStorage(namespace) {
-                    this.prefix = [ "__", namespace, "__" ].join("");
+                    this.prefix = ["__", namespace, "__"].join("");
                     this.ttlKey = "__ttl__";
                     this.keyMatcher = new RegExp("^" + this.prefix);
                 }
                 if (ls && window.JSON) {
                     methods = {
-                        _prefix: function(key) {
+                        _prefix: function (key) {
                             return this.prefix + key;
                         },
-                        _ttlKey: function(key) {
+                        _ttlKey: function (key) {
                             return this._prefix(key) + this.ttlKey;
                         },
-                        get: function(key) {
+                        get: function (key) {
                             if (this.isExpired(key)) {
                                 this.remove(key);
                             }
                             return decode(ls.getItem(this._prefix(key)));
                         },
-                        set: function(key, val, ttl) {
+                        set: function (key, val, ttl) {
                             if (angular.isNumber(ttl)) {
                                 ls.setItem(this._ttlKey(key), encode(now() + ttl));
                             } else {
@@ -137,24 +144,25 @@
                             }
                             return ls.setItem(this._prefix(key), encode(val));
                         },
-                        remove: function(key) {
+                        remove: function (key) {
                             ls.removeItem(this._ttlKey(key));
                             ls.removeItem(this._prefix(key));
                             return this;
                         },
-                        clear: function() {
-                            var i, key, keys = [], len = ls.length;
+                        clear: function () {
+                            var i, key, keys = [],
+                                len = ls.length;
                             for (i = 0; i < len; i++) {
                                 if ((key = ls.key(i)).match(this.keyMatcher)) {
                                     keys.push(key.replace(this.keyMatcher, ""));
                                 }
                             }
-                            for (i = keys.length; i--; ) {
+                            for (i = keys.length; i--;) {
                                 this.remove(keys[i]);
                             }
                             return this;
                         },
-                        isExpired: function(key) {
+                        isExpired: function (key) {
                             var ttl = decode(ls.getItem(this._ttlKey(key)));
                             return angular.isNumber(ttl) && now() > ttl ? true : false;
                         }
@@ -170,12 +178,15 @@
                 }
                 angular.extend(PersistentStorage.prototype, methods);
                 return PersistentStorage;
+
                 function now() {
                     return new Date().getTime();
                 }
+
                 function encode(val) {
                     return JSON.stringify(angular.isUndefined(val) ? null : val);
                 }
+
                 function decode(val) {
                     return JSON.parse(val);
                 }
@@ -183,12 +194,17 @@
             return PersistentStorage;
         });
     })();
-    (function() {
+    (function () {
         "use strict";
-        var module = angular.module("bloodhound.transport", [ "bloodhound.lru-cache" ]);
-        module.factory("Transport", function($http, $q, $timeout, LruCache) {
-            var Transport = function() {
-                var pendingRequestsCount = 0, pendingRequests = {}, maxPendingRequests = 6, requestCache = new LruCache(10), lastUrl = "";
+        var module = angular.module("bloodhound.transport", ["bloodhound.lru-cache"]);
+        module.factory("Transport", function ($http, $q, $timeout, LruCache) {
+            var Transport = function () {
+                var pendingRequestsCount = 0,
+                    pendingRequests = {},
+                    maxPendingRequests = 6,
+                    requestCache = new LruCache(10),
+                    lastUrl = "";
+
                 function Transport(o) {
                     o = o || {};
                     this._send = o.transport ? callbackToDeferred(o.transport) : $http.get;
@@ -201,11 +217,12 @@
                     requestCache = new LruCache(10);
                 };
                 angular.extend(Transport.prototype, {
-                    _get: function(url, o, cb) {
+                    _get: function (url, o, cb) {
                         if (url !== lastUrl) {
                             return;
                         }
-                        var that = this, promise;
+                        var that = this,
+                            promise;
                         if (promise = pendingRequests[url]) {
                             promise.then(dataPassthrough(done), fail);
                         } else if (pendingRequestsCount < maxPendingRequests) {
@@ -214,13 +231,16 @@
                         } else {
                             this.onDeckRequestArgs = [].slice.call(arguments, 0);
                         }
+
                         function done(resp) {
                             cb && cb(null, resp);
                             requestCache.set(url, resp);
                         }
+
                         function fail() {
                             cb && cb(true);
                         }
+
                         function always() {
                             pendingRequestsCount--;
                             delete pendingRequests[url];
@@ -230,7 +250,7 @@
                             }
                         }
                     },
-                    get: function(url, o, cb) {
+                    get: function (url, o, cb) {
                         var resp;
                         if (angular.isFunction(o)) {
                             cb = o;
@@ -238,7 +258,7 @@
                         }
                         lastUrl = url;
                         if (resp = requestCache.get(url)) {
-                            $timeout(function() {
+                            $timeout(function () {
                                 cb && cb(null, resp);
                             }, 0);
                         } else {
@@ -248,38 +268,42 @@
                     }
                 });
                 return Transport;
+
                 function callbackToPromise(fn) {
                     return function customSendWrapper(url, o) {
                         var deferred = $q.defer();
                         fn(url, o, onSuccess, onError);
                         return deferred.promise;
+
                         function onSuccess(resp) {
-                            $timeout(function() {
+                            $timeout(function () {
                                 deferred.resolve(resp);
                             }, 0);
                         }
+
                         function onError(err) {
-                            $timeout(function() {
+                            $timeout(function () {
                                 deferred.reject(err);
                             }, 0);
                         }
                     };
                 }
             }();
+
             function dataPassthrough(fn) {
-                return function(response) {
+                return function (response) {
                     fn(response.data);
                 };
             }
             return Transport;
         });
     })();
-    (function() {
+    (function () {
         "use strict";
         var module = angular.module("bloodhound.search-index", []);
-        module.factory("SearchIndex", function($filter) {
+        module.factory("SearchIndex", function ($filter) {
             var filter = $filter("filter");
-            var SearchIndex = function() {
+            var SearchIndex = function () {
                 function SearchIndex(o) {
                     o = o || {};
                     if (!o.datumTokenizer || !o.queryTokenizer) {
@@ -294,14 +318,14 @@
                         this.datums = o.datums;
                         this.trie = o.trie;
                     },
-                    add: function(data) {
+                    add: function (data) {
                         var that = this;
-                        data = angular.isArray(data) ? data : [ data ];
-                        _.each(data, function(datum) {
+                        data = angular.isArray(data) ? data : [data];
+                        angular.forEach(data, function (datum) {
                             var id, tokens;
                             id = that.datums.push(datum) - 1;
                             tokens = normalizeTokens(that.datumTokenizer(datum));
-                            _.each(tokens, function(token) {
+                            angular.forEach(tokens, function (token) {
                                 var node, chars, ch;
                                 node = that.trie;
                                 chars = token.split("");
@@ -313,9 +337,10 @@
                         });
                     },
                     get: function get(query) {
-                        var that = this, tokens, matches;
+                        var that = this,
+                            tokens, matches;
                         tokens = normalizeTokens(this.queryTokenizer(query));
-                        _.each(tokens, function(token) {
+                        angular.forEach(tokens, function (token) {
                             var node, chars, ch, ids;
                             if (matches && matches.length === 0) {
                                 return false;
@@ -333,7 +358,7 @@
                                 return false;
                             }
                         });
-                        return matches ? _.map(unique(matches), function(id) {
+                        return matches ? unique(matches).map(function (id) {
                             return that.datums[id];
                         }) : [];
                     },
@@ -349,23 +374,27 @@
                     }
                 });
                 return SearchIndex;
+
                 function normalizeTokens(tokens) {
-                    tokens = filter(tokens, function(token) {
+                    tokens = filter(tokens, function (token) {
                         return !!token;
                     });
-                    tokens = _.map(tokens, function(token) {
+                    tokens = tokens.map(function (token) {
                         return token.toLowerCase();
                     });
                     return tokens;
                 }
+
                 function newNode() {
                     return {
                         ids: [],
                         children: {}
                     };
                 }
+
                 function unique(array) {
-                    var seen = {}, uniques = [];
+                    var seen = {},
+                        uniques = [];
                     for (var i = 0; i < array.length; i++) {
                         if (!seen[array[i]]) {
                             seen[array[i]] = true;
@@ -374,8 +403,11 @@
                     }
                     return uniques;
                 }
+
                 function getIntersection(arrayA, arrayB) {
-                    var ai = 0, bi = 0, intersection = [];
+                    var ai = 0,
+                        bi = 0,
+                        intersection = [];
                     arrayA = arrayA.sort(compare);
                     arrayB = arrayB.sort(compare);
                     while (ai < arrayA.length && bi < arrayB.length) {
@@ -390,6 +422,7 @@
                         }
                     }
                     return intersection;
+
                     function compare(a, b) {
                         return a - b;
                     }
@@ -398,19 +431,21 @@
             return SearchIndex;
         });
     })();
-    (function() {
+    (function () {
         "use strict";
-        var module = angular.module("bloodhound.options-parser", [ "bloodhound.util" ]);
-        module.factory("oParser", function(util) {
-            var oParser = function() {
+        var module = angular.module("bloodhound.options-parser", ["bloodhound.util"]);
+        module.factory("oParser", function (util) {
+            var oParser = function () {
                 return {
                     local: getLocal,
                     prefetch: getPrefetch,
                     remote: getRemote
                 };
+
                 function getLocal(o) {
                     return o.local || null;
                 }
+
                 function getPrefetch(o) {
                     var prefetch, defaults;
                     defaults = {
@@ -434,6 +469,7 @@
                     }
                     return prefetch;
                 }
+
                 function getRemote(o) {
                     var remote, defaults;
                     defaults = {
@@ -461,13 +497,15 @@
                         }
                     }
                     return remote;
+
                     function byDebounce(wait) {
-                        return function(fn) {
+                        return function (fn) {
                             return util.debounce(fn, wait);
                         };
                     }
+
                     function byThrottle(wait) {
-                        return function(fn) {
+                        return function (fn) {
                             return util.throttle(fn, wait);
                         };
                     }
@@ -476,17 +514,18 @@
             return oParser;
         });
     })();
-    (function() {
+    (function () {
         "use strict";
-        var module = angular.module("bloodhound", [ "bloodhound.tokenizers", "bloodhound.options-parser", "bloodhound.search-index", "bloodhound.persistent-storage", "bloodhound.transport" ]);
-        module.factory("Bloodhound", function($rootScope, $q, $http, tokenizers, oParser, SearchIndex, PersistentStorage, Transport) {
-            var Bloodhound = function() {
+        var module = angular.module("bloodhound", ["bloodhound.tokenizers", "bloodhound.options-parser", "bloodhound.search-index", "bloodhound.persistent-storage", "bloodhound.transport"]);
+        module.factory("Bloodhound", function ($rootScope, $q, $http, tokenizers, oParser, SearchIndex, PersistentStorage, Transport) {
+            var Bloodhound = function () {
                 var old, keys;
                 keys = {
                     data: "data",
                     protocol: "protocol",
                     thumbprint: "thumbprint"
                 };
+
                 function Bloodhound(o) {
                     if (!o || !o.local && !o.prefetch && !o.remote) {
                         throw new Error("one of local, prefetch, or remote is required");
@@ -507,7 +546,8 @@
                 Bloodhound.tokenizers = tokenizers;
                 angular.extend(Bloodhound.prototype, {
                     _loadPrefetch: function loadPrefetch(o) {
-                        var that = this, serialized, promise;
+                        var that = this,
+                            serialized, promise;
                         if (serialized = this._readFromStorage(o.thumbprint)) {
                             this.index.bootstrap(serialized);
                             var deferred = $q.defer();
@@ -517,6 +557,7 @@
                             promise = $http.get(o.url, o.ajax).success(handlePrefetchResponse);
                         }
                         return promise;
+
                         function handlePrefetchResponse(resp) {
                             that.clear();
                             that.add(o.filter ? o.filter(resp) : resp);
@@ -524,11 +565,13 @@
                         }
                     },
                     _getFromRemote: function getFromRemote(query, cb) {
-                        var that = this, url, uriEncodedQuery;
+                        var that = this,
+                            url, uriEncodedQuery;
                         query = query || "";
                         uriEncodedQuery = encodeURIComponent(query);
                         url = this.remote.replace ? this.remote.replace(this.remote.url, query) : this.remote.url.replace(this.remote.wildcard, uriEncodedQuery);
                         return this.transport.get(url, this.remote.ajax, handleRemoteResponse);
+
                         function handleRemoteResponse(err, resp) {
                             err ? cb([]) : cb(that.remote.filter ? that.remote.filter(resp) : resp);
                         }
@@ -541,7 +584,8 @@
                         }
                     },
                     _readFromStorage: function readFromStorage(thumbprint) {
-                        var stored = {}, isExpired;
+                        var stored = {},
+                            isExpired;
                         if (this.storage) {
                             stored.data = this.storage.get(keys.data);
                             stored.protocol = this.storage.get(keys.protocol);
@@ -551,7 +595,9 @@
                         return stored.data && !isExpired ? stored.data : null;
                     },
                     _initialize: function initialize() {
-                        var that = this, local = this.local, promise;
+                        var that = this,
+                            local = this.local,
+                            promise;
                         if (this.prefetch) {
                             promise = this._loadPrefetch(this.prefetch);
                         } else {
@@ -562,6 +608,7 @@
                         local && promise.then(addLocalToIndex);
                         this.transport = this.remote ? new Transport(this.remote) : null;
                         return this.initPromise = promise;
+
                         function addLocalToIndex() {
                             that.add(angular.isFunction(local) ? local() : local);
                         }
@@ -573,7 +620,9 @@
                         this.index.add(data);
                     },
                     get: function get(query, cb) {
-                        var that = this, matches = [], cacheHit = false;
+                        var that = this,
+                            matches = [],
+                            cacheHit = false;
                         matches = this.index.get(query);
                         matches = this.sorter(matches).slice(0, this.limit);
                         if (matches.length < this.limit && this.transport) {
@@ -582,11 +631,12 @@
                         if (!cacheHit) {
                             (matches.length > 0 || !this.transport) && cb && cb(matches);
                         }
+
                         function returnRemoteMatches(remoteMatches) {
                             var matchesWithBackfill = matches.slice(0);
-                            _.each(remoteMatches, function(remoteMatch) {
+                            angular.forEach(remoteMatches, function (remoteMatch) {
                                 var isDuplicate;
-                                isDuplicate = _.some(matchesWithBackfill, function(match) {
+                                isDuplicate = matchesWithBackfill.some(function (match) {
                                     return that.dupDetector(remoteMatch, match);
                                 });
                                 !isDuplicate && matchesWithBackfill.push(remoteMatch);
@@ -606,15 +656,19 @@
                     }
                 });
                 return Bloodhound;
+
                 function getSorter(sortFn) {
                     return angular.isFunction(sortFn) ? sort : noSort;
+
                     function sort(array) {
                         return array.sort(sortFn);
                     }
+
                     function noSort(array) {
                         return array;
                     }
                 }
+
                 function ignoreDuplicates() {
                     return false;
                 }
@@ -622,16 +676,18 @@
             return Bloodhound;
         });
     })();
-    (function() {
+    (function () {
         "use strict";
         var module = angular.module("bloodhound.util", []);
-        module.factory("util", function($timeout) {
+        module.factory("util", function ($timeout) {
             return {
-                debounce: function(func, wait, immediate) {
+                debounce: function (func, wait, immediate) {
                     var promise, result;
-                    return function() {
-                        var context = this, args = arguments, later, callNow;
-                        later = function() {
+                    return function () {
+                        var context = this,
+                            args = arguments,
+                            later, callNow;
+                        later = function () {
                             promise = null;
                             if (!immediate) {
                                 result = func.apply(context, args);
@@ -646,16 +702,17 @@
                         return result;
                     };
                 },
-                throttle: function(func, wait) {
+                throttle: function (func, wait) {
                     var context, args, timeout, result, previous, later;
                     previous = 0;
-                    later = function() {
+                    later = function () {
                         previous = new Date();
                         timeout = null;
                         result = func.apply(context, args);
                     };
-                    return function() {
-                        var now = new Date(), remaining = wait - (now - previous);
+                    return function () {
+                        var now = new Date(),
+                            remaining = wait - (now - previous);
                         context = this;
                         args = arguments;
                         if (remaining <= 0) {
@@ -672,4 +729,122 @@
             };
         });
     })();
-})(window.angular, window._);
+})(window.angular);
+
+// Production steps of ECMA-262, Edition 5, 15.4.4.17
+// Reference: http://es5.github.io/#x15.4.4.17
+if (!Array.prototype.some) {
+    Array.prototype.some = function (fun /*, thisArg*/ ) {
+        'use strict';
+
+        if (this == null) {
+            throw new TypeError('Array.prototype.some called on null or undefined');
+        }
+
+        if (typeof fun !== 'function') {
+            throw new TypeError();
+        }
+
+        var t = Object(this);
+        var len = t.length >>> 0;
+
+        var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+        for (var i = 0; i < len; i++) {
+            if (i in t && fun.call(thisArg, t[i], i, t)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+}
+
+// Production steps of ECMA-262, Edition 5, 15.4.4.19
+// Reference: http://es5.github.io/#x15.4.4.19
+if (!Array.prototype.map) {
+
+    Array.prototype.map = function (callback, thisArg) {
+
+        var T, A, k;
+
+        if (this == null) {
+            throw new TypeError(' this is null or not defined');
+        }
+
+        // 1. Let O be the result of calling ToObject passing the |this| 
+        //    value as the argument.
+        var O = Object(this);
+
+        // 2. Let lenValue be the result of calling the Get internal 
+        //    method of O with the argument "length".
+        // 3. Let len be ToUint32(lenValue).
+        var len = O.length >>> 0;
+
+        // 4. If IsCallable(callback) is false, throw a TypeError exception.
+        // See: http://es5.github.com/#x9.11
+        if (typeof callback !== 'function') {
+            throw new TypeError(callback + ' is not a function');
+        }
+
+        // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
+        if (arguments.length > 1) {
+            T = thisArg;
+        }
+
+        // 6. Let A be a new array created as if by the expression new Array(len) 
+        //    where Array is the standard built-in constructor with that name and 
+        //    len is the value of len.
+        A = new Array(len);
+
+        // 7. Let k be 0
+        k = 0;
+
+        // 8. Repeat, while k < len
+        while (k < len) {
+
+            var kValue, mappedValue;
+
+            // a. Let Pk be ToString(k).
+            //   This is implicit for LHS operands of the in operator
+            // b. Let kPresent be the result of calling the HasProperty internal 
+            //    method of O with argument Pk.
+            //   This step can be combined with c
+            // c. If kPresent is true, then
+            if (k in O) {
+
+                // i. Let kValue be the result of calling the Get internal 
+                //    method of O with argument Pk.
+                kValue = O[k];
+
+                // ii. Let mappedValue be the result of calling the Call internal 
+                //     method of callback with T as the this value and argument 
+                //     list containing kValue, k, and O.
+                mappedValue = callback.call(T, kValue, k, O);
+
+                // iii. Call the DefineOwnProperty internal method of A with arguments
+                // Pk, Property Descriptor
+                // { Value: mappedValue,
+                //   Writable: true,
+                //   Enumerable: true,
+                //   Configurable: true },
+                // and false.
+
+                // In browsers that support Object.defineProperty, use the following:
+                // Object.defineProperty(A, k, {
+                //   value: mappedValue,
+                //   writable: true,
+                //   enumerable: true,
+                //   configurable: true
+                // });
+
+                // For best browser support, use the following:
+                A[k] = mappedValue;
+            }
+            // d. Increase k by 1.
+            k++;
+        }
+
+        // 9. return A
+        return A;
+    };
+}
