@@ -1,6 +1,6 @@
 {
   "name": "ng-atp",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Angular Autocompleter based on Twitter Bloodhound",
   "main": "dist/js/ngAtp-bundle.js",
   "repository": {
