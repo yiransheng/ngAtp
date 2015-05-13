@@ -9,7 +9,9 @@ The backbone of `ngAtp` is `ngBloodhound`, which is almost entirely adopted from
 
 ## Quick Start
 
-Include `dist/js/ng-atp-bundle.js` or `dist/js/ng-atp-bundle.min.js` on your page after `angular` and `lodash` (or use as a bower component: `bower install ng-atp`). 
+Include `dist/js/ng-atp-bundle.js` or `dist/js/ng-atp-bundle.min.js` on your page after `angular` and ~~`lodash`~~<sup>1</sup> (or use as a bower component: `bower install ng-atp`). 
+
+[1] lodash is no longer a dependency
 
 * For CommonJS:
 ```
