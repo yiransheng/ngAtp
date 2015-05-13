@@ -169,6 +169,22 @@ function ATPStates(Bloodhound) {
       }
     },
     tryCompleteExact: function () {
+      // if there are multiple suggestions left that starts with the query string, 
+      // do not complete exact, even if we might have a exact match already
+      // for example, current query is "ba", we have "ba" as an exact match, however, 
+      // "ba duh", "ba ha" are both still in the sugestion list, we should not try to 
+      // finish
+      var j, len = this.suggestions.length, possibleExacts = 0;
+
+      for(j=0; j < len; j++) {
+        if(ATP$startWith( this.format(this.suggestions[j]).toLowerCase(), this.query.toLowerCase() )) {
+          possibleExacts++;
+        }
+        if(possibleExacts > 1) {
+          return false;
+        }
+      }
+
       var suggested = this.suggestions.findIndex(function (s, index) {
         return this.format(s).toLowerCase() === this.query.toLowerCase();
       }, this);
