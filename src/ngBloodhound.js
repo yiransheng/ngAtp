@@ -573,7 +573,14 @@
                         return this.transport.get(url, this.remote.ajax, handleRemoteResponse);
 
                         function handleRemoteResponse(err, resp) {
-                            err ? cb([]) : cb(that.remote.filter ? that.remote.filter(resp) : resp);
+                            if(err) {
+                              cb([]);
+                              return;
+                            }
+                            if(angular.isFunction(that.remote.transform)) {
+                              resp = that.remote.transform(resp);
+                            }
+                            cb(that.remote.filter ? that.remote.filter(resp) : resp);
                         }
                     },
                     _saveToStorage: function saveToStorage(data, thumbprint, ttl) {
