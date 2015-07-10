@@ -608,6 +608,9 @@
   
                           function handlePrefetchResponse(resp) {
                               that.clear();
+                              if(angular.isFunction(that.prefetch.transform)) {
+                                resp = that.prefetch.transform(resp);
+                              }
                               that.add(o.filter ? o.filter(resp) : resp);
                               that._saveToStorage(that.index.serialize(), o.thumbprint, o.ttl);
                           }
@@ -812,6 +815,7 @@
       initialized: false,
       $new: function (options) {
         var atp = Object.create(this);
+        atp.limit = options.limit || -1;
         atp.selected = -1;
         atp.query = "";
         atp.suggestions = [];
@@ -901,6 +905,9 @@
               this.suggestions = ATP$unique(suggestions, function (s) {
                 return this.format(s);
               }.bind(this));
+            }
+            if(this.limit > 0 && this.suggestions.length > this.limit) {
+              this.suggestions = this.suggestions.slice(0, this.limit);
             }
           }
         }.bind(this));

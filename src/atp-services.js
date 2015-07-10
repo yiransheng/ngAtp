@@ -24,6 +24,7 @@ function ATPStates(Bloodhound) {
     initialized: false,
     $new: function (options) {
       var atp = Object.create(this);
+      atp.limit = options.limit || -1;
       atp.selected = -1;
       atp.query = "";
       atp.suggestions = [];
@@ -113,6 +114,9 @@ function ATPStates(Bloodhound) {
             this.suggestions = ATP$unique(suggestions, function (s) {
               return this.format(s);
             }.bind(this));
+          }
+          if(this.limit > 0 && this.suggestions.length > this.limit) {
+            this.suggestions = this.suggestions.slice(0, this.limit);
           }
         }
       }.bind(this));

@@ -560,6 +560,9 @@
 
                         function handlePrefetchResponse(resp) {
                             that.clear();
+                            if(angular.isFunction(that.prefetch.transform)) {
+                              resp = that.prefetch.transform(resp);
+                            }
                             that.add(o.filter ? o.filter(resp) : resp);
                             that._saveToStorage(that.index.serialize(), o.thumbprint, o.ttl);
                         }
